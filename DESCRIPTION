@@ -1,0 +1,14 @@
+Package: caperpyogm
+Type: Package
+Title: Estimation of the Number of Male Capercaillie in the Pyrenees Mountains 
+Version: 1.0
+Date: 2020-06-21
+Depends: R (>= 3.5.0),ggplot2,dplyr,rjags,knitr
+Imports: MCMCvis,rlang, purrr,tidyr
+Suggests: bayesplot, ade4, ggridges, gridExtra, coda
+LazyData: true
+Author: Clement Calenge
+Maintainer: Clement Calenge <clement.calenge@ofb.gouv.fr>
+Description: Functions and data for the estimation of the number of male capercaillie in the Pyrenees mountains, from 2010 to 2019, with data collected by the Observatoire des Galliformes de montagne, as described in Calenge et al. (in prep.).
+VignetteBuilder: knitr
+License: GPL (>= 2)
