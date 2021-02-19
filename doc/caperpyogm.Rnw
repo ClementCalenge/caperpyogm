@@ -107,7 +107,7 @@ the package \texttt{devtools} and use the function
 install.packages("devtools")
 
 ## Install the package caperpyogm
-devtools::install_github("ClementCalenge/caperpyogm", ref="main")
+devtools::install_github("ClementCalenge/caperpyogm", ref="main", build_vignettes=TRUE)
 @ 
 
 It is supposed throughout this vignette that the reader is familiar
