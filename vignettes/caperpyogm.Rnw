@@ -93,8 +93,8 @@ set.seed(9567)
 
 
 This vignette is the supplementary material of the paper of Calenge et
-al.The aim of this paper is to estimate the number of male
-capercaillie in the 5 geographic regions of the French Pyrenees
+al. (in prep.). The aim of this paper is to estimate the number of
+male capercaillie in the 5 geographic regions of the French Pyrenees
 mountains, for each period of two years between 2010 and 2019. A
 companion package named \texttt{caperpyogm} contains the data and
 functions used for this paper, and is required to reproduce the
@@ -107,7 +107,7 @@ the package \texttt{devtools} and use the function
 install.packages("devtools")
 
 ## Install the package caperpyogm
-devtools::install_github("ClementCalenge/caperpyogm")
+devtools::install_github("ClementCalenge/caperpyogm", ref="main")
 @ 
 
 It is supposed throughout this vignette that the reader is familiar
@@ -2242,7 +2242,7 @@ ULs. As by definition none of these components were known at the onset
 of the program, the total number of males present on ULs is the most
 uncertain quantity in our model. However, when we supposed that the
 number of males on ULs had the same distribution as the number of
-males on KILs, we could benefit from a larger dataset. Moreover, the
+males on KILs, we could benefit from a larger dataset. 
 
 The discovery that the number of males on ULs was higher than
 previously thought led to a much higher imprecision of the estimates

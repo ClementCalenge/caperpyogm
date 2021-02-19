@@ -14,12 +14,12 @@ function(x, xlab="Period",ylab="Number of cocks", trim=0.95)
 
     efm <- data.frame(an=1:5, ef=tapply(to2$Size, to2$Period, median))
 
-    plo <- ggplot(to2, aes(y=.data$Size, x=.data$Period))+
-        geom_violin(draw_quantiles=c(0.1,0.9))+
-        geom_boxplot(width=0.2, fill="grey", outlier.shape=NA)+
-        geom_point(data=efm, aes(x=.data$an,y=.data$ef), col="red")+
-        geom_line(data=efm, aes(x=.data$an,y=.data$ef), col="red")+
-        ylab(ylab)+xlab(xlab)
+    plo <- ggplot2::ggplot(to2, ggplot2::aes(y=.data$Size, x=.data$Period))+
+        ggplot2::geom_violin(draw_quantiles=c(0.1,0.9))+
+        ggplot2::geom_boxplot(width=0.2, fill="grey", outlier.shape=NA)+
+        ggplot2::geom_point(data=efm, ggplot2::aes(x=.data$an,y=.data$ef), col="red")+
+        ggplot2::geom_line(data=efm, ggplot2::aes(x=.data$an,y=.data$ef), col="red")+
+        ggplot2::ylab(ylab)+ggplot2::xlab(xlab)
 
     return(plo)
 

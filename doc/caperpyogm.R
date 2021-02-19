@@ -25,7 +25,7 @@ set.seed(9567)
 #  install.packages("devtools")
 #  
 #  ## Install the package caperpyogm
-#  devtools::install_github("ClementCalenge/caperpyogm")
+#  devtools::install_github("ClementCalenge/caperpyogm", ref="main")
 
 ## ----results="asis", echo=FALSE---------------------------
 

@@ -15,12 +15,12 @@ function(object, GR, changeRatePeriods=c(1,5),
 
     df$quant <- factor(findInterval(df$x,quantiles))
 
-    plo <- ggplot(df, aes(.data$x,.data$y)) + geom_line() +
-        geom_ribbon(aes(ymin=0, ymax=.data$y, fill=.data$quant)) +
-        scale_fill_brewer(guide="none")+
-        xlab("Change rate (%)")+
-        ylab("Probability density")+
-        geom_vline(xintercept=0, col="red",size=2)
+    plo <- ggplot2::ggplot(df, ggplot2::aes(.data$x,.data$y)) + ggplot2::geom_line() +
+        ggplot2::geom_ribbon(ggplot2::aes(ymin=0, ymax=.data$y, fill=.data$quant)) +
+        ggplot2::scale_fill_brewer(guide="none")+
+        ggplot2::xlab("Change rate (%)")+
+        ggplot2::ylab("Probability density")+
+        ggplot2::geom_vline(xintercept=0, col="red",size=2)
 
     return(plo)
 

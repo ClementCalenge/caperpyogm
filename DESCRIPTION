@@ -3,9 +3,9 @@ Type: Package
 Title: Estimation of the Number of Male Capercaillie in the Pyrenees Mountains 
 Version: 1.0
 Date: 2020-06-21
-Depends: R (>= 3.5.0),ggplot2,dplyr,rjags,knitr
-Imports: MCMCvis,rlang, purrr,tidyr
-Suggests: bayesplot, ade4, ggridges, gridExtra, coda
+Depends: R (>= 3.5.0),dplyr,rjags
+Imports: MCMCvis,rlang, purrr,tidyr,colorspace,ggplot2
+Suggests: bayesplot, ade4, ggridges, gridExtra, coda, xtable, matrixStats, knitr
 LazyData: true
 Author: Clement Calenge
 Maintainer: Clement Calenge <clement.calenge@ofb.gouv.fr>

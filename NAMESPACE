@@ -1,4 +1,4 @@
-import(dplyr,ggplot2,rjags)
+import(dplyr,rjags)
 importFrom("stats", "aggregate", "dbinom", "density", "median",
            "quantile", "rbeta", "rbinom", "rnorm", "rpois", "sd", "runif")
 importFrom("utils", "capture.output", "object.size", "str")
