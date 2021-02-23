@@ -420,6 +420,13 @@ We furthermore suppose the following distributions for these parameters:
 \epsilon_{i,b(t)} & \sim & \mathcal{N}(0,\sigma_\epsilon)  
 \end{eqnarray*}
 
+\textit{Remark}: We defined five geographic regions for the KALs (1 =
+western foothills, 2 = central foothills, 3 = central high range, 4 =
+eastern high range, 5 = western high range), but since we had less
+data for the other types of leks, we defined only three geographic
+regions for the KILs (foothills, western high range, central and
+eastern high range) and only one for ULs.
+
 
 \subsubsection{Fit of the count model}
 \label{sec:fitmc}
@@ -449,7 +456,11 @@ occasion, this data.frame contains:\\
 \item The number of observers. We have subtracted 2 to the number of
   observers, to improve the mixing of the MCMC chains.
 \item The number of males counted on the lek
-\item The number of geographic region containing the lek
+\item The ID of geographic region containing the lek. Note that in
+  this dataset, the geographic regions are not yet recoded (i.e. there
+  are still 5 regions for KILs and ULs; these regions will be recoded
+  into three and one region respectively by the function
+  \texttt{dataCount2jags} below).
 \item The type of the lek (1 = KAL, 2 = KIL, 3 = UL)
 \item The label of the natural unit containing the lek
 \item The year during which the count occurred.\\
@@ -462,8 +473,11 @@ cat(modelCountDetectBinREY)
 @ 
 
 
-We now use the function \texttt{dataCount2jags} to prepare the data
-to fit the JAGS model:
+We now use the function \texttt{dataCount2jags} to prepare the data to
+fit the JAGS model. Note that this functions recodes the 5 regions
+into three regions for the KILs (region 1 = foothills ; region 2 =
+eastern and central high range; region 5 = western high range) and one
+region for the ULs (region 1) :
 
 
 <<preparation-model-count>>=
