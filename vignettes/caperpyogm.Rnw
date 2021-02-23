@@ -110,6 +110,11 @@ install.packages("devtools")
 devtools::install_github("ClementCalenge/caperpyogm", ref="main")
 @ 
 
+\textit{Remark}: on Windows, it is required to also install the Rtools
+(\url{https://cran.r-project.org/bin/windows/Rtools/}) on your
+computer to have a working \texttt{devtools} package (see
+\url{https://www.r-project.org/nosvn/pandoc/devtools.html}).\\
+
 It is supposed throughout this vignette that the reader is familiar
 with the model developed in this paper. Nevertheless, we will present
 a brief reminder on this model in this vignette. This model combines
