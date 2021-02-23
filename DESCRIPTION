@@ -5,7 +5,7 @@ Version: 1.0
 Date: 2020-06-21
 Depends: R (>= 3.5.0),dplyr,rjags
 Imports: MCMCvis,rlang, purrr,tidyr,colorspace,ggplot2
-Suggests: bayesplot, ade4, ggridges, gridExtra, coda, xtable, matrixStats, knitr
+Suggests: bayesplot, ade4, ggridges, gridExtra, coda, xtable, matrixStats, knitr, stringr
 LazyData: true
 Author: Clement Calenge
 Maintainer: Clement Calenge <clement.calenge@ofb.gouv.fr>

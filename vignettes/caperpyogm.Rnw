@@ -43,7 +43,7 @@
 \author{Clement Calenge,\\
   Office Fran\c{c}ais de la Biodiversit\'{e}\\
   Saint Benoist -- 78610 Auffargis -- France.}
-\date{June 2020}
+\date{January 2021}
 
 \setlength{\parindent}{0cm}
 
@@ -107,7 +107,7 @@ the package \texttt{devtools} and use the function
 install.packages("devtools")
 
 ## Install the package caperpyogm
-devtools::install_github("ClementCalenge/caperpyogm", ref="main", build_vignettes=TRUE)
+devtools::install_github("ClementCalenge/caperpyogm", ref="main")
 @ 
 
 It is supposed throughout this vignette that the reader is familiar
@@ -532,7 +532,6 @@ gelman.diag(cm)
 @ 
 
 
-
 \subsubsection{Goodness of fit}
 \label{sec:goodness-fit}
 
@@ -668,6 +667,162 @@ We have checked the goodness of fit of our model on other variables
 and combination of variables (leks, gr-years, etc.). We leave it to
 the reader to play with this function to check other variables if they
 want.
+
+
+\subsubsection{Identifiability of the parameters}
+\label{sec:identifiability}
+
+We checked the identifiability of the parameters of interest in our
+model using the coefficient $\tau$ of \cite{Garrett2000}, measuring
+the overlap between the prior and the posterior distribution. Let $x$
+be a parameter of the model, $P(x)$ is the prior distribution for this
+parameter, and $P(x|\mathbf{D})$ is the posterior distribution. Then,
+the parameter $\tau$ measures the overlap:
+$$
+\tau = \int_x \mbox{min}( P(x), P(x|\mathbf{D}) ) dx
+$$
+This parameter is close to 1 when the dataset \textbf{D} does not
+bring a lot of information on the parameter $x$.\\
+
+We used the functions \texttt{overlapPriorPost} from the package
+\texttt{caperpyogm} (see the help page of this functions) to calculate
+the coefficient $\tau$ for the variances of random effects in the
+models, and the function \texttt{plotOverlap} from the same package to
+visualize how the posterior distribution differs from the prior
+distribution of these parameters:
+
+<<fig.width=10, fig.height=5, out.width='\\linewidth',out.height='0.5\\linewidth'>>=
+## Use the MCMC samples from the model coefModelCountDetectBinREY 
+rs <- do.call(rbind, coefModelCountDetectBinREY)
+
+## Detects the name of the parameters for which tau should be calculated
+library(stringr)
+nam <- c("sigmaREY", "sigmaepsilon","sigmaeta","sigmakappa",
+         "sigmanu")
+nam <- unlist(lapply(nam, function(z) colnames(rs)[str_detect(colnames(rs),z)]))
+
+
+## For each parameter, calculates the value of tau:
+lb <- sapply(nam, function(na) {
+    tau <- overlapPriorPost(coefModelCountDetectBinREY, na,
+                            prior="dgamma(den$x[j],0.01, 0.01)", from=0, to=1000, n=10000)
+    return(tau)
+})
+
+## Builds the data.frame required by plotOverlap
+df <- data.frame(Parameter=nam, tau=lb)
+
+## Mathematical symbols used for each parameter (see ?plotmath)
+namo <- paste0("expression(",  c("sigma[e]", "sigma[epsilon]",
+                                 "sigma[eta]^(1)", "sigma[eta]^(2)",
+                                 "sigma[eta]^(3)",
+                                 "sigma[kappa]","sigma[nu]"),")")
+df$namo <- namo
+
+## Prior used for these variances
+df$prior <- "dgamma(z,0.01,0.01)"
+
+## customize xy limits for the plots, for a better viz
+## of the posterior distribution of each parameter
+df$from <- 0.01
+df$to <- 10
+df$to[1] <- 100
+df$to[2] <- 600
+df$to[6] <- 600
+
+
+plotOverlap(coefModelCountDetectBinREY, df, cex=1)
+
+@
+
+This table shows the value of the $\tau$ parameters and quick plots of
+the prior (dashed lines) and posterior (solid lines) distribution for
+each parameter. All the variance parameters are correctly identified,
+with very low values of $\tau$. We build the same plot for the effects
+of regions/type of leks/two years period $\kappa_{glb}$:
+
+<<fig.width=5, fig.height=10, out.width='0.5\\linewidth',out.height='\\linewidth'>>=
+
+## Detects the name of the parameters for which tau should be calculated:
+## startinq with kappa
+nam <- colnames(rs)[str_detect(colnames(rs),"^kappa")]
+
+## note that some of the parameters are not of interest:
+## there is only one region for ULs and three regions for KILs.
+## (to facilitate calculations, we defined a three way table
+##  in JAGS crossing 5 regions, 3 types of leks and 5 periods, but
+##  some of these parameters are not used in the model). 
+## For KILS, only regions 1,2,5 are valid
+## For ULs, only region 1.
+## For KALs, all regions are valid
+## We remove unused parameters:
+nam <- nam[!(str_detect(nam, "3\\,2\\,.")|
+             str_detect(nam, "4\\,2\\,.")|
+             str_detect(nam, "[2-5]\\,3\\,."))]
+
+## For each parameter, calculates the value of tau:
+lb <- sapply(nam, function(na) {
+    tau <- overlapPriorPost(coefModelCountDetectBinREY, na,
+                            prior="dnorm(den$x[j],0, sqrt(10))", from=-10, to=10)
+    return(tau)
+})
+
+## Builds the data.frame required by plotOverlap
+df <- data.frame(Parameter=nam, tau=lb)
+
+## Mathematical symbols used for each parameter (see ?plotmath)
+namo <- paste0("expression(", gsub(",", "", nam[3:11]),")")
+df$namo <- namo
+
+## Prior used for these variances
+df$prior <- "dnorm(z,0,sqrt(10))"
+
+## The xy limits for the plots
+df$from <- -4
+df$to <- 4
+
+
+plotOverlap(coefModelCountDetectBinREY, df, cex=1)
+@ 
+
+Similarly, all distributions seem to be correctly identified. Finally,
+we also present the intercept and slope of the number of observers for
+the detection model:
+
+
+<<fig.width=10, fig.height=2.5, out.width='\\linewidth',out.height='0.25\\linewidth'>>=
+## Detects the name of the parameters for which tau should be calculated:
+## startinq with kappa
+nam <- c("interceptpd","pente1pd")
+
+## For each parameter, calculates the value of tau:
+lb <- sapply(nam, function(na) {
+    tau <- overlapPriorPost(coefModelCountDetectBinREY, na,
+                            prior="dnorm(den$x[j],0, sqrt(10))", from=-10, to=10)
+    return(tau)
+})
+
+## Builds the data.frame required by plotOverlap
+df <- data.frame(Parameter=nam, tau=lb)
+
+## Mathematical symbols used for each parameter (see ?plotmath)
+namo <- paste0("expression(", c("alpha[d]","beta[d]"),")")
+df$namo <- namo
+
+## Prior used for these variances
+df$prior <- "dnorm(z,0,sqrt(10))"
+
+## The xy limits for the plots
+df$from <- -4
+df$to <- 4
+
+
+plotOverlap(coefModelCountDetectBinREY, df, cex=1)
+@ 
+
+
+These two parameters are also correctly identified.
+
 
 
 \subsection{Grid cells search model}
@@ -899,6 +1054,59 @@ mean(sim[2,]<obs[2])
 @ 
 
 The simulated values are well within the distribution.
+
+\subsubsection{Identifiability of the parameters}
+\label{sec:ident-param}
+
+We also assessed the identifiability of the parameters of interest in
+this model, using the parameter $\tau$ of \cite{Garrett2000} (see
+section \ref{sec:identifiability}):
+
+<<>>=
+rs <- do.call(rbind, coefModelULPresence)
+nam <- c("P_inclusion_inex","P_inclusion_expe","P_detection",
+         "pd$","pdprev$","a","b")
+nam <- unlist(lapply(nam, function(z) colnames(rs)[str_detect(colnames(rs),z)]))
+
+
+## For each parameter, calculates the value of tau:
+lb <- sapply(nam, function(na) {
+    if (str_detect(na, "^a")|str_detect(na,"^b")) {
+        tau <- overlapPriorPost(coefModelULPresence, na)
+    } else {
+        tau <- overlapPriorPost(coefModelULPresence, na,
+                                prior="dunif(den$x[j],0, 1)", from=0, to=1)
+    }
+    return(tau)
+})
+
+## Builds the data.frame required by plotOverlap
+df <- data.frame(Parameter=nam, tau=lb)
+namo <- paste0("expression(", c("zeta[0]","zeta[1]","delta","alpha", nam[5:8]),")")
+df$namo <- namo
+df$prior <- "dunif(z,0,1)"
+df$prior[5:8] <- "dnorm(z,0,sqrt(10))"
+df$from <- 0
+df$to <- 1
+df$from[5:8] <- -10
+df$to[5:8] <- 10
+
+
+plotOverlap(coefModelULPresence, df, cex=1)
+@
+
+The parameters of this model were not as precisely identified as for
+the model of counts. The probability $\alpha$ is the less precisely
+identified parameter; however this parameter is not a parameter of
+interest: we included this parameter in our model to account for the
+fact that we should not model the detection process during prospection
+when it was known that a lek was present in a grid cell. Thus, the
+weak identifiability for this parameter is not a problem. Other
+parameters are more precisely identified, though there is still a
+large imprecision for many of them -- in particular the parameters
+estimated using our field experiment.  Future data collection will
+allow to precise these posterior distributions, but meanwhile we will
+accept these estimates.
 
 
 \subsection{Estimation of the number of males in each region}
@@ -2290,6 +2498,10 @@ discovered following grid cells.
   the reliability of N-mixture models for count
   data. \textit{Biometrics}, 74, 369-377.
 
+\bibitem[GAR00]{Garrett2000}
+  Garrett, E.S. \& Zeger, E.L. 2000. Latent class model
+  diagnosis. \textit{Biometrics}, 56, 1055--1067.
+  
 \bibitem[LIN18]{Link2018} 
   Link, W. A.; Schofield, M. R.; Barker, R. J. \& Sauer, J. R. 2018. On
   the robustness of N-mixture models. \textit{Ecology}, 99, 1547-1551.

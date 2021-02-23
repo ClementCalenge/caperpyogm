@@ -6,6 +6,9 @@ importFrom("rlang", ".data")
 importFrom("MCMCvis", "MCMCchains")
 importFrom("purrr", "map", "map_chr","map_int")
 importFrom("tidyr", "gather")
+importFrom("grid", "seekViewport", "viewport","unit",
+           "pushViewport","grid.rect","grid.lines","grid.text",
+           "gpar","grid.newpage","dataViewport")
 
 
 S3method(predict, caperpySim)
@@ -50,3 +53,5 @@ export(simulateDataList)
 export(simulateN)
 export(simulateDataList2)
 export(summary.estimateMales)
+export(overlapPriorPost)
+export(plotOverlap)

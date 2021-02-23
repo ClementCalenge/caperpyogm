@@ -23,9 +23,9 @@ set.seed(9567)
 ## ----eval=FALSE-------------------------------------------
 #  ## If devtools is not yet installed, type
 #  install.packages("devtools")
-#  
+#
 #  ## Install the package caperpyogm
-#  devtools::install_github("ClementCalenge/caperpyogm", ref="main", build_vignettes=TRUE)
+#  devtools::install_github("ClementCalenge/caperpyogm", ref="main")
 
 ## ----results="asis", echo=FALSE---------------------------
 
@@ -58,7 +58,7 @@ dataf <- data.frame(
                "$\\pi_q$",
                "$a_{g(q)}$",
                "$b_{g(q)}$",
-               "$d$",               
+               "$d$",
                "$\\beta$",
                "$\\alpha$",
                "$S_c$",
@@ -254,6 +254,121 @@ comparef(od$gr)
 ## ----comparef-combination---------------------------------
 comparef(paste0(od$gr,"-",od$type,"-",od$period))
 
+## ----fig.width=10, fig.height=5, out.width='\\linewidth',out.height='0.5\\linewidth'----
+## Use the MCMC samples from the model coefModelCountDetectBinREY
+rs <- do.call(rbind, coefModelCountDetectBinREY)
+
+## Detects the name of the parameters for which tau should be calculated
+library(stringr)
+nam <- c("sigmaREY", "sigmaepsilon","sigmaeta","sigmakappa",
+         "sigmanu")
+nam <- unlist(lapply(nam, function(z) colnames(rs)[str_detect(colnames(rs),z)]))
+
+
+## For each parameter, calculates the value of tau:
+lb <- sapply(nam, function(na) {
+    tau <- overlapPriorPost(coefModelCountDetectBinREY, na,
+                            prior="dgamma(den$x[j],0.01, 0.01)", from=0, to=1000, n=10000)
+    return(tau)
+})
+
+## Builds the data.frame required by plotOverlap
+df <- data.frame(Parameter=nam, tau=lb)
+
+## Mathematical symbols used for each parameter (see ?plotmath)
+namo <- paste0("expression(",  c("sigma[e]", "sigma[epsilon]",
+                                 "sigma[eta]^(1)", "sigma[eta]^(2)",
+                                 "sigma[eta]^(3)",
+                                 "sigma[kappa]","sigma[nu]"),")")
+df$namo <- namo
+
+## Prior used for these variances
+df$prior <- "dgamma(z,0.01,0.01)"
+
+## customize xy limits for the plots, for a better viz
+## of the posterior distribution of each parameter
+df$from <- 0.01
+df$to <- 10
+df$to[1] <- 100
+df$to[2] <- 600
+df$to[6] <- 600
+
+
+plotOverlap(coefModelCountDetectBinREY, df, cex=1)
+
+
+## ----fig.width=5, fig.height=10, out.width='0.5\\linewidth',out.height='\\linewidth'----
+
+## Detects the name of the parameters for which tau should be calculated:
+## startinq with kappa
+nam <- colnames(rs)[str_detect(colnames(rs),"^kappa")]
+
+## note that some of the parameters are not of interest:
+## there is only one region for ULs and three regions for KILs.
+## (to facilitate calculations, we defined a three way table
+##  in JAGS crossing 5 regions, 3 types of leks and 5 periods, but
+##  some of these parameters are not used in the model).
+## For KILS, only regions 1,2,5 are valid
+## For ULs, only region 1.
+## For KALs, all regions are valid
+## We remove unused parameters:
+nam <- nam[!(str_detect(nam, "3\\,2\\,.")|
+             str_detect(nam, "4\\,2\\,.")|
+             str_detect(nam, "[2-5]\\,3\\,."))]
+
+## For each parameter, calculates the value of tau:
+lb <- sapply(nam, function(na) {
+    tau <- overlapPriorPost(coefModelCountDetectBinREY, na,
+                            prior="dnorm(den$x[j],0, sqrt(10))", from=-10, to=10)
+    return(tau)
+})
+
+## Builds the data.frame required by plotOverlap
+df <- data.frame(Parameter=nam, tau=lb)
+
+## Mathematical symbols used for each parameter (see ?plotmath)
+namo <- paste0("expression(", gsub(",", "", nam[3:11]),")")
+df$namo <- namo
+
+## Prior used for these variances
+df$prior <- "dnorm(z,0,sqrt(10))"
+
+## The xy limits for the plots
+df$from <- -4
+df$to <- 4
+
+
+plotOverlap(coefModelCountDetectBinREY, df, cex=1)
+
+## ----fig.width=10, fig.height=2.5, out.width='\\linewidth',out.height='0.25\\linewidth'----
+## Detects the name of the parameters for which tau should be calculated:
+## startinq with kappa
+nam <- c("interceptpd","pente1pd")
+
+## For each parameter, calculates the value of tau:
+lb <- sapply(nam, function(na) {
+    tau <- overlapPriorPost(coefModelCountDetectBinREY, na,
+                            prior="dnorm(den$x[j],0, sqrt(10))", from=-10, to=10)
+    return(tau)
+})
+
+## Builds the data.frame required by plotOverlap
+df <- data.frame(Parameter=nam, tau=lb)
+
+## Mathematical symbols used for each parameter (see ?plotmath)
+namo <- paste0("expression(", c("alpha[d]","beta[d]"),")")
+df$namo <- namo
+
+## Prior used for these variances
+df$prior <- "dnorm(z,0,sqrt(10))"
+
+## The xy limits for the plots
+df$from <- -4
+df$to <- 4
+
+
+plotOverlap(coefModelCountDetectBinREY, df, cex=1)
+
 ## ----description-gridSearch-------------------------------
 head(gridSearch)
 
@@ -293,6 +408,38 @@ mean(sim[1,]<obs[1])
 ## Region 2
 mean(sim[2,]<obs[2])
 
+
+## ---------------------------------------------------------
+rs <- do.call(rbind, coefModelULPresence)
+nam <- c("P_inclusion_inex","P_inclusion_expe","P_detection",
+         "pd$","pdprev$","a","b")
+nam <- unlist(lapply(nam, function(z) colnames(rs)[str_detect(colnames(rs),z)]))
+
+
+## For each parameter, calculates the value of tau:
+lb <- sapply(nam, function(na) {
+    if (str_detect(na, "^a")|str_detect(na,"^b")) {
+        tau <- overlapPriorPost(coefModelULPresence, na)
+    } else {
+        tau <- overlapPriorPost(coefModelULPresence, na,
+                                prior="dunif(den$x[j],0, 1)", from=0, to=1)
+    }
+    return(tau)
+})
+
+## Builds the data.frame required by plotOverlap
+df <- data.frame(Parameter=nam, tau=lb)
+namo <- paste0("expression(", c("zeta[0]","zeta[1]","delta","alpha", nam[5:8]),")")
+df$namo <- namo
+df$prior <- "dunif(z,0,1)"
+df$prior[5:8] <- "dnorm(z,0,sqrt(10))"
+df$from <- 0
+df$to <- 1
+df$from[5:8] <- -10
+df$to[5:8] <- 10
+
+
+plotOverlap(coefModelULPresence, df, cex=1)
 
 ## ---------------------------------------------------------
 NKAL <- c(14L, 64L, 76L, 48L, 46L)
@@ -335,7 +482,7 @@ elpdBinREY <- elpdLeks(llcBinREY)
 #  listCoefsCVBin <- kfoldCVModelCount(ooo, dataList, "modelCountDetectBin")
 #  listCoefsCVBinREYObs2 <- kfoldCVModelCount(ooo, dataList, "modelCountDetectBinREYObs2")
 #  listCoefsCVBetaBinREY <- kfoldCVModelCount(ooo, dataList, "modelCountDetectBetaBinREY")
-#  
+#
 #  ## The list
 #  llcBin <- LLCount(dataList, listCoefsCVBinREY, ooo)
 #  llcBinREYObs2 <- LLCount(dataList, listCoefsCVBinREY, ooo)
@@ -370,12 +517,12 @@ elpdcBetaBinREY <- elpdBetaBinREY/cidl
 elpdcBinPerYear <- elpdBinPerYear/cidl
 
 ## ---------------------------------------------------------
-## ELPD 
+## ELPD
 ## Randomization test
 library(ade4)
 pv <- sapply(list(elpdBin, elpdBinREY, elpdBinREYObs2, elpdBetaBinREY,
             elpdBinPerYear), function(x) {
-    
+
     sim <- sapply(1:1000, function(i)
         sum(sample(c(-1,1), length(elpdBinREY),
                    replace=TRUE)*(elpdBinREY-x)))
@@ -395,11 +542,11 @@ elpdDiffsd <- sqrt(length(elpdBin))*c(sd(elpdBin-elpdBinREY),
                                   sd(elpdBinPerYear-elpdBinREY))
 
 
-## "Corrected" ELPD 
+## "Corrected" ELPD
 ## Randomization test
 pvc <- sapply(list(elpdcBin, elpdcBinREY, elpdcBinREYObs2, elpdcBetaBinREY,
                   elpdcBinPerYear), function(x) {
-    
+
     sim <- sapply(1:1000, function(i)
         sum(sample(c(-1,1), length(elpdBinREY),
                    replace=TRUE)*(elpdcBinREY-x)))
@@ -458,7 +605,7 @@ text(0.05, -8.71, "Lek 281")
 #                                  lcb$nbobs, lcb$nbmales,
 #                                  lcb$gr, as.numeric(factor(lcb$type)),
 #                                  lcb$natun, lcb$year)
-#  
+#
 #  coefModelm281 <- fitModelCount(dataListwo281, "modelCountDetectBinREY")
 
 ## ---------------------------------------------------------
@@ -498,7 +645,7 @@ cmv <- cmv[cmv<8]
 plot(cmbk, cmk, xlab="Point estimate of kappa with 281",
      ylab="Point estimate of kappa without 281")
 plot(cmbv, cmv, xlab="SD of kappa distribution with 281",
-     ylab="SD of kappa distribution without 281") 
+     ylab="SD of kappa distribution without 281")
 
 ## ---------------------------------------------------------
 set <- 1/MCMCchains(coefModelm281, "sigmaeta")
@@ -513,7 +660,7 @@ delta2b <- c(0, 0.001, 0.005, 0.01, 0.05, 0.1, 0.3)
 
 ## ----eval=FALSE-------------------------------------------
 #  libtt <- list()
-#  
+#
 #  for (j in 1:10) {
 #      cat("###########################",
 #          "\n###########################",
@@ -536,12 +683,12 @@ delta2b <- c(0, 0.001, 0.005, 0.01, 0.05, 0.1, 0.3)
 #      libtt[[j]] <- liresuBeta
 #      saveRDS(libtt, file="libtt.Rds")
 #  }
-#  
-#  
+#
+#
 #  listNmalesBB <- lapply(libtt, function(liresuBeta)
 #      lapply(liresuBeta, function(x)
 #          estimateNmales(x$coefs, coefModelULPresence, gridFrame, NKAL, NKIL)))
-#  
+#
 #  medianNmalesBB <- sapply(listNmalesBB, function(z)
 #      sapply(z, function(x) median(getTotal(x)[,1])))
 
@@ -590,17 +737,17 @@ simn <- simulateN(coefModelCountDetectBinREY,dataList)
 #      libtt2[[j]] <- liresuBeta
 #      saveRDS(libtt2, file="libtt2.Rds")
 #  }
-#  
-#  
+#
+#
 #  listNmalesBB2 <- lapply(libtt2, function(liresuBeta)
 #      lapply(liresuBeta, function(x)
 #          estimateNmales(x$coefs, coefModelULPresence,
 #                         gridFrame, NKAL, NKIL)))
-#  
+#
 #  medianNmalesBB2 <- sapply(listNmalesBB2, function(z)
 #      sapply(z, function(x) mean(getTotal(x)[,1])))
 #  save(medianNmalesBB2, file="medianNmalesBB2.rda")
-#  
+#
 
 ## ---------------------------------------------------------
 delta2b <- c(0, 0.004, 0.015, 0.05, 0.1, 0.2)
@@ -643,11 +790,11 @@ doubleCountspb <- c(0.05, 0.1, 0.2, 0.3, 0.5)
 #      lidtt[[j]] <- liresudc
 #      saveRDS(lidtt, file="lidtt.Rds")
 #  }
-#  
+#
 #  listNmalesDC <- lapply(lidtt, function(liresudc)
 #      lapply(liresudc, function(x)
 #          estimateNmales(x$coefs, coefModelULPresence, gridFrame, NKAL, NKIL)))
-#  
+#
 #  medianNmalesDC <- sapply(listNmalesDC,
 #                           function(z)
 #      sapply(z, function(x) median(getTotal(x)[,1])))
@@ -666,7 +813,7 @@ lines(xv, predict(lm(y~x, data=xy), newdata=data.frame(x=xv)), col="red")
 
 ## ----eval=FALSE-------------------------------------------
 #  doubleCountspb <- c(0.05, 0.1, 0.2, 0.3, 0.5)
-#  
+#
 #  lidtt2 <- list()
 #  for (j in 1:10) {
 #      cat("###########################",
@@ -686,12 +833,12 @@ lines(xv, predict(lm(y~x, data=xy), newdata=data.frame(x=xv)), col="red")
 #      lidtt2[[j]] <- liresudc
 #      saveRDS(lidtt2, file="lidtt2.Rds")
 #  }
-#  
-#  
+#
+#
 #  listNmalesDC2 <- lapply(lidtt2, function(liresuBeta)
 #      lapply(liresuBeta, function(x)
 #          estimateNmales(x$coefs, coefModelULPresence, gridFrame, NKAL, NKIL)))
-#  
+#
 #  medianNmalesDC2 <- sapply(listNmalesDC2, function(z)
 #      sapply(z, function(x) mean(getTotal(x)[,1])))
 
@@ -707,4 +854,3 @@ xy <- data.frame(x=rep(c(0,doubleCountspb), 10),
                  y=as.vector(rbind(medianNmalesBB2[1,], medianNmalesDC2)))
 xv <- seq(0,0.5,length=200)
 lines(xv, predict(lm(y~x, data=xy), newdata=data.frame(x=xv)), col="red")
-
