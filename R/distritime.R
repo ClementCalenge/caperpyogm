@@ -12,7 +12,7 @@ function(x, xlab="Period",ylab="Number of cocks", trim=0.95)
     names(to2)[names(to2)=="key"] <- "Period"
     names(to2)[names(to2)=="value"] <- "Size"
 
-    efm <- data.frame(an=1:5, ef=tapply(to2$Size, to2$Period, median))
+    efm <- data.frame(an=1:ncol(x), ef=tapply(to2$Size, to2$Period, median))
 
     plo <- ggplot2::ggplot(to2, ggplot2::aes(y=.data$Size, x=.data$Period))+
         ggplot2::geom_violin(draw_quantiles=c(0.1,0.9))+
