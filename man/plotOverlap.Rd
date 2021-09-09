@@ -64,9 +64,9 @@ plotOverlap(x, df, cex = 1.5)
 }
 \references{
 
-  Calenge C., Menoni E., Milhau B., Montadert M. (in
-  prep.). Building a Capercaillie Monitoring program in the Pyrenees 
-  Mountains France based on Participatory Research.
+  Calenge C., Menoni E., Milhau B., Foulche K, Chiffard J., Marchandeau
+  S. (in prep.). The participatory monitoring of the capercaillie in the
+  French Pyrenees.
 
   Garrett, E. and Zeger, S. 2000. Latent class model diagnosis.
   Biometrics, 56, 1055-1067.

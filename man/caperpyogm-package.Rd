@@ -54,9 +54,10 @@
 Maintainer: \packageMaintainer{caperpyogm}
 }
 \references{
-  Calenge C., Menoni E., Milhau B., Montadert M. (in
-  prep.). Building a Capercaillie Monitoring program in the Pyrenees 
-  Mountains France based on Participatory Research.
+  Calenge C., Menoni E., Milhau B., Foulche K, Chiffard J., Marchandeau
+  S. (in prep.). The participatory monitoring of the capercaillie in the
+  French Pyrenees.
+
 
   Data in the package were kindly provided by:
   

@@ -38,13 +38,13 @@
 
 
 
-\title{ Estimation of the Number of Male Capercaillie on Leks of the
-  French Pyrenees Mountains from 2010 to 2019 }
-\author{Clement Calenge,\\
+\title{Supporting information of the article: The participatory
+  monitoring of the capercaillie in the
+  French Pyrenees}
+\author{Cl\'{e}ment Calenge et al.,\\
   Office Fran\c{c}ais de la Biodiversit\'{e}\\
-  Saint Benoist -- 78610 Auffargis -- France.}
-\date{January 2021}
-
+  Saint Benoist -- 78610 Auffargis -- France.} 
+\date{}
 \setlength{\parindent}{0cm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -92,15 +92,16 @@ set.seed(9567)
 \section*{Introduction}
 
 
-This vignette is the supplementary material of the paper of Calenge et
-al. (in prep.). The aim of this paper is to estimate the number of
-male capercaillie in the 5 geographic regions of the French Pyrenees
-mountains, for each period of two years between 2010 and 2019. A
-companion package named \texttt{caperpyogm} contains the data and
-functions used for this paper, and is required to reproduce the
-calculations in this document. To install this package, first install
-the package \texttt{devtools} and use the function
-\texttt{install\_github} to install \texttt{caperpyogm}:
+This vignette is the supplementary material of the article of Calenge
+et al. (in prep.). The aim of this paper is to estimate the numbers of
+capercaillie cocks in the 5 geographic regions of the French Pyrenees
+mountains, for each two-year period between 2010 and 2019. A companion
+package named \texttt{caperpyogm} contains the data and functions used
+for this paper, and is required to reproduce the calculations in this
+document. The present document is also available as a vignette of this
+package. To install this package, first install the package
+\texttt{devtools} and use the function \texttt{install\_github} to
+install \texttt{caperpyogm}:
 
 <<eval=FALSE>>=
 ## If devtools is not yet installed, type
@@ -115,76 +116,70 @@ devtools::install_github("ClementCalenge/caperpyogm", ref="main")
 computer to have a working \texttt{devtools} package (see
 \url{https://www.r-project.org/nosvn/pandoc/devtools.html}).\\
 
-It is supposed throughout this vignette that the reader is familiar
-with the model developed in this paper. Nevertheless, we will present
-a brief reminder on this model in this vignette. This model combines
+Throughout this vignette, we suppose that the reader is familiar with
+the model developed in this paper. Nevertheless, we present a brief
+reminder on this model in this vignette. This model combines
 three datasets:\\
 
 \begin{enumerate}
-\item the results of counts of singing males carried out every period
-  of two years on capercaillie leks, which allow to model the time
-  changes in the mean abundance of on the various types of leks (KAL =
-  known active leks; KIL = known leks with indeterminate activity
-  status; UL = leks unknown at the time of the definition of the
+\item the results of counts of singing capercaillie cocks carried out
+  every two-year period on leks, which allow to model the time changes
+  in the mean cock number on the different types of leks (KAL = known
+  active leks; KIL = known leks with indeterminate activity status; UL
+  = leks unknown at the time of the definition of the
   sampling design), and in the different geographic regions;\\
 
-\item the results of the search for new, unknown leks in grid cells
-  randomly selected in the whole area. This dataset was required to
-  estimate the number of leks on our study area, which were unknown at
-  the time of the definition of the sampling design.\\
+\item the results of the search for new ULs in grid cells randomly
+  selected in the study area. This dataset was required to estimate
+  the number of ULs on our study area.\\
 
-\item the results of an experiment carried out to estimate the
-  probability to detect an active lek unknown to the observer in a
-  grid cell during a grid cell search. This experiment involved both
-  experienced or inexperienced observers searching for leks unknown to
-  them (but known to us).\\
+\item the results of an experiment carried out to estimate the lek
+  detection probability. This experiment involved both experienced or
+  inexperienced observers searching for leks unknown to
+  them (but known to us) in selected grid cells.\\
 \end{enumerate}
 
 We developed two sub-models for (i) the mean number of males actually
 present on a lek of a given type (KAL, KIL, UL), during a given period
-and within a given geographic region, and (ii) the number of leks
-unknown to us at the time of the definition of the sampling design in
-a given geographic region.\\
+and within a given geographic region, and (ii) the number of ULs in
+each geographic region.\\
 
-
-In this document, we give a detailed information on this study, which
-completes the information given in the paper:\\
+In this document, we describe this study in detail:\\
 
 \begin{itemize}
-\item In section \ref{sec:notations-1}, we present all the
-  mathematical notations used in the paper and in the appendix in a
-  table.\\
+\item In section \ref{sec:notations-1}, we present in a table all
+  mathematical notations used in the article and in the present
+  vignette.\\
 
 \item In section \ref{sec:notat-model-descr}, we give a brief reminder
-  on the structure of the model used to estimate the number of males,
-  and we show how to use the datasets and functions given in the
-  package to reproduce the calculations given in the paper. Note that
-  all the functions included in this paper have a very detailed help
-  page explaining how they should be used. This section contains
-  additional elements not presented in the paper (residual analysis,
-  analysis of the convergence and the mixing of MCMC chains,
-  sensitivity to outliers, etc.).\\
+  on the structure of the model used to estimate the number of
+  capercaillie cocks at different spatial scales, and we show how to
+  use the datasets and functions of the package to reproduce the
+  calculations of the article. Note that all the functions of the
+  package have a very detailed help page explaining how they should be
+  used. This section contains additional analyses not presented in the
+  paper (residual analysis, analysis of the convergence and the mixing
+  of MCMC chains, sensitivity to outliers, etc.).\\
 
 \item In section \ref{sec:other-models-detect}, we demonstrate how a
-  cross-validation approach was used to select the best model for the
-  detection process during lek censuses.\\
+  cross-validation approach was used to select the best detection
+  model for the lek censuses.\\
 
-\item In section \ref{sec:lek--281}, we study more in detail the case
-  of the lek \# 281. This lek is characterized by a strong residual in
-  our model. We examined more precisely whether this lek had a strong
-  influence on our inference.\\
+\item In section \ref{sec:lek--281}, we study more in detail the
+  influence of the lek \# 281 on the population size estimation,
+  because lek is characterized by a strong residual in our model. \\
 
 \item In section \ref{sec:sens-our-model}, we considered in detail the
   criticisms of the N-mixture models by \cite{Barker2017} and
   \cite{Link2018}. In particular, we used simulations to assess the
-  effect of unaccounted heterogeneity in detection probability as well
-  as the effect of accidental double counting on the estimated number
-  of males.\\
+  effect of both unaccounted heterogeneity in detection probability
+  and accidental double counting on the estimated number of males.\\
   
-\item In section \ref{sec:history-program}, we give some additional
+\item In section \ref{sec:history-program}, we give additional
   elements describing the history of the monitoring program. In
-  particular, we describe how the discovery that unknown leks were
-  characterized by large number of males affected our program.\\
+  particular, we describe how the discovery that the number of cocks
+  on ULs was larger than expected a priori affected our monitoring
+  program.\\ 
 \end{itemize}
 
 
@@ -295,30 +290,30 @@ dataf <- data.frame(
            "D",
            "P",
            "P"),
-    Description=c("Number of detected males during census $k$ of the year $t$ on lek $i$",
-                  "Index of the two-year period containing the year $t$",
+    Description=c("Number of detected males during census $k$ of year $t$ on lek $i$",
+                  "Index of the two-year period containing year $t$",
                   "Number of males actually present on lek $i$ during the two year-period $b(t)$",
                   "Probability of detection of a male present on lek $i$ during census $k$ of year $t$",
-                  "Intercept of the model for the process of detection of males during censuses",
-                  "Slope of the number of observers in the model for the detection process of males during censuses",
-                  "Number of observers participating to the census $k$ of the year $t$ on lek $i$",
-                  "Random effect of the year $t$ on the detectability of males in geographic region $g$",
-                  "Standard deviation of the year random effect on the detectability of males during censuses",
-                  "Expectation of the Poisson distribution of the number of males on lek $i$ during period $b(t)$",
+                  "Intercept of the cock detection model",
+                  "Slope of the number of observers in the cock detection model",
+                  "Number of observers participating to census $k$ of year $t$ on lek $i$",
+                  "Random effect of year $t$ on cock detectability in geographic region $g$",
+                  "Standard deviation of random effects of the years on the cock detectability",
+                  "Expectation of the Poisson distribution used for the number of males on lek $i$ during period $b(t)$",
                   "Parameter describing the average number of males during period $b(t)$ on a lek of type $\\ell(i)$ in region $g(i)$",
-                  "Random effect of the natural unit $u(i)$",
-                  "Random effect of the lek $i$",
+                  "Random effect of natural unit $u(i)$",
+                  "Random effect of lek $i$",
                   "Overdispersion residual",
-                  "Mean of the average numbers of males during period $b(t)$ on leks of type $\\ell(i)$ in region $g(i)$",
-                  "Standard deviation of the average numbers of males during period $b(t)$ on leks of type $\\ell(i)$ in region $g(i)$",
-                  "Standard deviation of the natural units random effects",
-                  "Standard deviation of the lek random effects",
+                  "Mean of the average cock numbers during period $b(t)$ on leks of type $\\ell(i)$ in region $g(i)$",
+                  "Standard deviation of the average cock numbers during period $b(t)$ on leks of type $\\ell(i)$ in region $g(i)$",
+                  "Standard deviation of the random effects of natural units",
+                  "Standard deviation of the random effects of leks",
                   "Standard deviation of the overdispersion residuals",
-                  "Whether the cell $q$ contains an unknown lek detected during a search of our program",
+                  "Whether the cell $q$ contains an unknown lek detected during a search carried out within the framework of our program",
                   "Whether the cell $q$ was sampled in 2018--2019",
-                  "Whether the cell $q$ contains an unknown lek detected before the search of our program",
+                  "Whether the cell $q$ contains an unknown lek detected before the sampling of the cell within the framework of our program",
                   "Whether the cell $q$ actually contains an unknown lek",
-                  "Proportion of the cell $q$ covered by the potential presence area of the capercaillie",
+                  "Proportion of the cell $q$ covered by the capercaillie potential presence area",
                   "Whether the cell $q$ already contains a known lek",
                   "Probability that the cell $q$ contains an unknown lek",
                   "Intercept of the model predicting $\\pi_q$",
@@ -326,15 +321,15 @@ dataf <- data.frame(
                   "Slope of $h_q$ in the model predicting $\\pi_q$",
                   "Probability of detection of an unknown lek during the search of a grid cell",
                   "Probability that an unknown lek present in the cell was discovered prior to its sampling",
-                  "Number of the known leks present in grid cell $c$ included in the search sector",
-                  "Number of the known leks present in grid cell $c$ detected by the observer",
-                  "Number of the known leks present in grid cell $c$",
-                  "Probability to detect a lek during a search when the lek is in the search sector",
+                  "Number of known leks present in grid cell $c$ included in the search sector",
+                  "Number of known leks present in grid cell $c$ detected by the observer",
+                  "Number of known leks present in grid cell $c$",
+                  "Detection probability of a lek during a search, given that the lek is in the search sector",
                   "Level of experience of the observers searching the cell $c$",
-                  "Probability that the search sector defines by the observer with experience $e(c)$ includes a lek present in a cell",
-                  "Number of leks of type $\\ell$ in the region $g$ (to be estimated for UL",
-                  "Number of grid cells in the frame",
-                  "Number of males on leks of type $\\ell$ during the period $b$ in region $g$",
+                  "Probability that the search sector defined by the observer with experience $e(c)$ includes a lek present in a cell",
+                  "Number of leks of type $\\ell$ in region $g$ (to be estimated for ULs)",
+                  "Number of grid cells in the sampling frame",
+                  "Number of males on leks of type $\\ell$ during period $b$ in region $g$",
                   "Number of males on all leks of the mountain range during period $b$"
                   ))
 library(xtable)
@@ -351,8 +346,9 @@ print(xt, include.rownames=FALSE,
 \label{sec:notat-model-descr}
 
 We describe in this section the two sub-models required for the
-estimation of the numbers of males present in the geographical regions
-of the Pyrenees, for each two-years period between 2010 and 2019.
+estimation of the numbers of capercaillie cocks in the five
+geographical regions of the Pyrenees, for each two-years period
+between 2010 and 2019.
 
 \subsection{Count model}
 \label{sec:model-description}
@@ -364,36 +360,36 @@ We first describe the sub-model of the mean number of males detected
 during the lek censuses carried out in the French Pyrenees mountains
 between 2010 and 2019.\\
 
-Let $y_{i,t,k}$ be the number of males counted during the census $k$ of the year $t$ on the lek $i$. We model these counts
-with a N-mixture model. We suppose that the number of detected animals
-is the realization of a binomial distribution:
+Let $y_{i,t,k}$ be the number of males counted during census $k$ of
+year $t$ on lek $i$. We model these counts with a N-mixture model. We
+assume that the number of detected animals can be described using a
+binomial distribution:
 \begin{equation}
   \label{eq:eqy}
 y_{i,t,k} \sim \mathcal{B}(N_{i,b(t)}, p_{i,t,k})
 \end{equation}
-where $N_{i,b(t)}$ is the number of males actually present on lek $i$
-during the two-years period $b(t)$ including year $t$, and $p_{i,t,k}$
-is the probability of detection characterizing this census on
-this lek, this year. We suppose the following detection model:
+where $N_{i,b(t)}$ is the actual number of males actually present on
+lek $i$ during the two-years period $b(t)$ including year $t$, and
+$p_{i,t,k}$ is the corresponding detection probability. We suppose the
+following detection model: 
 \begin{equation}
   \label{eq:detect}
 \mbox{logit } p_{i,t,k} = \alpha_d + \beta_d \times o_{i,t,k} + e_{g(i),t}
 \end{equation}
-
 where $o_{i,t,k}$ is the number of observers present on lek $i$ during
 census $k$ of year $t$, $\alpha_d$ is the intercept of the
 model, $\beta_d$ is the slope, and $e_{g(i),t}$ is a Gaussian random
 effect characterizing year $t$ in the geographic region $g(i)$ where
-the lek $i$ is located. More formally, we suppose:
+the lek $i$ is located:
 $$
 e_{g(i),t} \sim \mathcal{N}(0, \sigma_e)
 $$
 We discuss alternative detection models in section
 \ref{sec:other-models-detect}.\\
 
-Moreover, we suppose that the actual number of males $N_{i,b(t)}$ on
-lek $i$ during the two-years period $b(t)$  containing the year $t$ is
-the realization of a Poisson distribution:
+Moreover, we assume that the actual number of males $N_{i,b(t)}$ on
+lek $i$ during the two-year period $b(t)$ that includes year $t$
+can be described using a Poisson distribution:
 \begin{equation}
   \label{eq:eqN}
   N_{i,b(t)}\sim \mathcal{P}(\lambda_{i,b(t)})
@@ -406,16 +402,16 @@ this distribution:
 I(\ell(i) =2) + \eta_i + \epsilon_{i,b(t)}
 \end{equation}
 Where $\kappa_{g(i),\ell(i),b(t)}$ is a random intercept
-characterizing the type $\ell(i)$ of the lek $i$ (1 for KAL, 2 for
-KIL, and 3 for UL) in the geographic region $g(i)$ containing lek $i$
-during two-years period $b(t)$ including year $t$; $\nu_{u(i)}$ is a
-random effect characterizing the effect of the natural unit $u(i)$
-which contains the lek $i$ (note that a random effect characterizing
-the natural unit is only included for KILs, see paper for an
-explanation); $\eta_i$ is a random effect characterizing lek $i$, and
+characterizing type $\ell(i)$ of lek $i$ (1 for KALs, 2 for KILs,
+and 3 for ULs) in the geographic region $g(i)$ that contains lek $i$,
+during two-years period $b(t)$ that includes year $t$; $\nu_{u(i)}$ is a
+random effect characterizing natural unit $u(i)$ that contains the
+lek $i$ (note that a random effect characterizing the natural unit is
+only included for KILs, see the article for an explanation); $\eta_i$ is a
+random effect characterizing lek $i$, and
 $\epsilon_{i,b(t)}$ is a Gaussian overdispersion residual.\\
 
-We furthermore suppose the following distributions for these parameters:
+We furthermore assume that the following distributions describe the parameters:
 \begin{eqnarray*}
 \kappa_{g(i),\ell(i),b(t)} & \sim & \mathcal{N}(\mu_{g(i),\ell(i)},
   \sigma_{\kappa})\\
@@ -444,7 +440,7 @@ library(caperpyogm)
 @ 
 
 All the datasets of the package are ``lazy-loaded'', i.e. they are
-immediately available:
+immediately available to the user:
 
 <<description-lekcounts>>=
 head(lekcounts)
@@ -456,7 +452,7 @@ this data.frame contains:\\
 
 \begin{itemize}
 \item The lek label, numbered from 1 to 330
-\item The two-years period during which  the census occurred
+\item The two-year period during which  the census occurred
 \item The number of observers. We have subtracted 2 to the number of
   observers, to improve the mixing of the MCMC chains.
 \item The number of males counted on the lek
@@ -496,7 +492,7 @@ We can now use the function \texttt{fitModelCount} to fit this
 model. WARNING: THIS CALCULATION TAKES A VERY LONG TIME (several hours)
 !!!! Note that we have included the results of this calculation as a
 dataset of the package, so that the reader does not need to launch
-this function to reproduce the other calculations:
+this function to reproduce further calculations:
 
 <<fit-model-count, eval=FALSE>>=
 coefModelCountDetectBinREY <- fitModelCount(dataList, "modelCountDetectBinREY")
@@ -540,10 +536,10 @@ mcmc_trace(coefModelCountDetectBinREY,
            regex_pars=c("REY","interceptpd","pente1pd","sigmaREY"))
 @ 
 
-We also calculate the Gelman diagnostic for the parameters. To save
-some space, we do not show the results of this diagnostic in this
-vignette and leave it to the reader to check the correct mixing based
-on this diagnostic:
+We also calculate the statistic of Gelman and Rubin (1992) for the
+parameters. To save some space, we do not show the results of this
+diagnostic in this vignette and leave it to the reader to check the
+correct mixing based on this diagnostic:
 
 <<gelman-diagnostic, eval=FALSE>>=
 gelman.diag(cm)
@@ -557,8 +553,8 @@ gelman.diag(cm)
 We then check the goodness of fit of the model. We simulate $M$
 virtual datasets (one per MCMC sample) and consider several summary
 statistics (see below). For each one, we compare the observed
-statistics (calculated on the actual dataset) with the distribution
-calculated on the simulated datasets. We first use the function
+statistics (calculated on the actual dataset) with the statistical
+distributions of the simulated values. We first use the function
 \texttt{simulateModelCount} to simulate the datasets. WARNING!!! THIS
 CALCULATION CAN BE VERY LONG (about half an hour). Note that we have
 included the results of this calculation as a dataset of the package,
@@ -577,14 +573,11 @@ plot(predict(simBinREY), residuals(simBinREY),
      ylab="Standardized residuals")
 @ 
 
-Here, each point corresponds to a census.  These residuals do
-not present any problematic pattern, except a very small number
-standardized residuals greater than 6. This indicates a very minor
-overdispersion in the data.\\
-
-Note that a group of censuses with a residual greater than 6
-correspond to the same lek. Indeed, this appears clearly if we
-calculate the residuals at the lek level:
+Here, each point corresponds to a census.  These residuals do not
+present any problematic pattern, except a very small number of
+standardized residuals greater than 6. Note that the group of censuses
+with a residual greater than 6 correspond to the same lek. Indeed,
+this appears clearly if we calculate the residuals at the lek level:
 
 <<residuals-prediction-lek>>=
 plot(predict(simBinREY, groupingFactor="lek"),
@@ -593,10 +586,10 @@ plot(predict(simBinREY, groupingFactor="lek"),
      ylab="residuals")
 @
 
-Here, each point correspond to one lek. The largest residual
-correspond to the lek 281, an unknown lek that was discovered in 2013
-and censused only this year. We study more in details in section
-\ref{sec:lek--281} the influence of this lek on our prediction.\\
+Here, each point corresponds to one lek. The largest residual
+correspond to the lek 281, a UL that was discovered in 2013 and
+censused only this year. We study more in details in section
+\ref{sec:lek--281} the influence of this lek on the estimation.\\
 
 
 
@@ -604,9 +597,10 @@ and censused only this year. We study more in details in section
 \label{sec:test-goodness-fit}
 
 We calculate various statistics to test the goodness of fit of our
-model. One possibility is to calculate, for each census, the
-mean number of males $\hat{y}_{itk}$ across all our simulated datasets. We
-can then calculate the chi-square statistics for the observed dataset:
+model; the first statistics is the mean number of males
+$\hat{y}_{itk}$ for each census, averaged across all our simulated
+datasets. We can then calculate the chi-square statistics for the
+observed dataset:
 $$
 \chi^2 = \sum_{i,t,k} \frac{(y_{itk}-\hat{y}_{itk})^2}{\hat{y}_{itk}}
 $$
@@ -626,23 +620,24 @@ chi2obs <- (sum(((ry-apply(sim,1,mean))^2)/apply(sim,1,mean)))
 chisq <- ((sim-apply(sim,1,mean))^2)/apply(sim,1,mean)
 ch <- (colSums(chisq))
 
-## proportion of chi-square
+## proportion of simulated chi-square values > observation
 mean(ch>=chi2obs)
 @
 
-The observed chi-square is in the middle of the simulated
-distribution. We can also compare other statistics, e.g. compare the
-observed total number of detected males over the 10 years of the study
-with the distribution of simulated values:
+The observed chi-square is at the center of the simulated statistical
+distribution.\\
+
+We also compared the observed total number of detected males over the
+10 years of the study with the distribution of simulated values:
 
 <<crit-nb-tot>>=
 mean(colSums(sim)>=sum(ry))
 @ 
 
-We can also, for each census, calculate a 80\% credible
-interval on the expected detected number of males (using the simulated
-datasets), and calculate the proportion of censuses falling in
-the credible interval:
+...which is also at the center of the simulated statistical
+distribution.  We calculated a 80\% credible interval on the expected
+detected number of males (using the simulated datasets), and computed
+the proportion of censuses falling in the 80\% credible interval:
 
 <<crit-per-lek-count>>=
 q1 <- apply(sim,1,quantile,0.1)
@@ -650,6 +645,7 @@ q2 <- apply(sim,1,quantile,0.9)
 mean((ry>=q1)&(ry<=q2))
 @ 
 
+...also indicating a good fit.\\
 
 We define below a function named \texttt{comparef}, which calculates
 the proportion of simulated numbers greater than or equal to the
@@ -665,17 +661,19 @@ comparef <- function(na)
 }
 @ 
 
-We can for example calculate this proportion for each geographic
-region (and use as statistic for each one the total number of animals
-detected in a region over the 10 years of the study):
+We used this function to compare observed values with the statistical
+distribution of simulated values for different levels of an
+explanatory variable. For example, we assessed the fit within each
+geographic region (and use as statistic for each one the total number
+of animals detected in a region over the 10 years of the study):
 
 <<comparef-gr>>=
 comparef(od$gr)
 @ 
 
-We can also use combination of variables, for example calculate this
-proportion for each combination of geographic region, type of lek, and
-period:
+We can also assessed the fit for each level of different combinations
+of explanatory variables. For example we assessed the goodness of fit
+for each combination of geographic region, type of lek, and period:
 
 <<comparef-combination>>=
 comparef(paste0(od$gr,"-",od$type,"-",od$period))
@@ -691,11 +689,12 @@ want.
 \label{sec:identifiability}
 
 We checked the identifiability of the parameters of interest in our
-model using the coefficient $\tau$ of \cite{Garrett2000}, measuring
-the overlap between the prior and the posterior distribution. Let $x$
-be a parameter of the model, $P(x)$ is the prior distribution for this
-parameter, and $P(x|\mathbf{D})$ is the posterior distribution. Then,
-the parameter $\tau$ measures the overlap:
+model using the coefficient $\tau$ described by \cite{Garrett2000},
+which measures the overlap between the prior and the posterior
+distribution of a parameter. Let $x$ be a parameter of the model,
+$P(x)$ is the prior distribution for this parameter, and
+$P(x|\mathbf{D})$ is its posterior distribution. Then, the parameter
+$\tau$ measures the overlap:
 $$
 \tau = \int_x \mbox{min}( P(x), P(x|\mathbf{D}) ) dx
 $$
@@ -703,9 +702,9 @@ This parameter is close to 1 when the dataset \textbf{D} does not
 bring a lot of information on the parameter $x$.\\
 
 We used the functions \texttt{overlapPriorPost} from the package
-\texttt{caperpyogm} (see the help page of this functions) to calculate
+\texttt{caperpyogm} (see the help page of this functiond) to calculate
 the coefficient $\tau$ for the variances of random effects in the
-models, and the function \texttt{plotOverlap} from the same package to
+model, and the function \texttt{plotOverlap} from the same package to
 visualize how the posterior distribution differs from the prior
 distribution of these parameters:
 
@@ -851,32 +850,30 @@ These two parameters are also correctly identified.
 
 Consider a grid cell $q$ sampled by our protocol.  If this cell was
 sampled before 2018, our protocol implied that observers should search
-unknown leks in the sampled cell according to the protocol described
-in Calenge et al. (in prep). An update of our grid cells sampling
-frame in 2018-2019 resulted in the inclusion of additional
-information: indeed, several unknown leks have been discovered between
-2010 and 2017 by the network of observers outside the framework of our
-monitoring (e.g. resulting either from accidental discovery, from
-compilation of local knowledge, or from local initiatives leading to
-the search for new leks). See a more detailed explanation of this
-update of our sampling frame in section
+UL in the sampled cell in every case. An update of our grid cells
+sampling frame in 2018--2019 resulted in the inclusion of additional
+information in the sampling frame; indeed, several ULs have been
+discovered between 2010 and 2017 by the network of observers outside
+the framework of our monitoring (e.g. resulting either from accidental
+discovery, from compilation of local knowledge, or from local
+initiatives leading to the search for new leks). See a more detailed
+explanation of this update of our sampling frame in section
 \ref{sec:history-program}. Therefore, some of the grid cells sampled
-in 2018-2019 may already contain an unknown lek discovered previously
-by the network. In such cases, no search was organized in the sampled
-grid
-cell, since the occurrence of an unknown lek was already known.\\
+in 2018-2019 may already contain a UL discovered previously by the
+network. In such cases, no search was organized in the sampled
+grid cell, since the occurrence of a UL was already known.\\
 
-Let $z_q$ be a binary variable taking the value 1 if this cell
-contains an unknown lek detected during a search organized within the
-framework of our program and 0 otherwise (thus, if a cell $q$ contains
-an unknown lek discovered prior to its sampling, $z_q=0$). Let $f_q$
-be a binary variable taking the value 1 if the cell was randomly
-sampled in 2018 or 2019, and 0 otherwise. Finally, let $s_q$ be a
-binary variable taking the value 1 if cell $q$ included an unknown lek
-discovered prior to its sampling and 0 otherwise.\\
+Let $z_q$ be a binary variable taking a value of 1 if this cell
+contains a UL detected during a search organized within the framework
+of our program and a value of 0 otherwise (thus, if a cell $q$
+contains a UL discovered prior to its sampling, $z_q=0$). Let $f_q$ be
+a binary variable taking a value of 1 if the cell was randomly sampled
+in 2018 or 2019, and a value of 0 otherwise. Finally, let $s_q$ be a
+binary variable taking a value of 1 if cell $q$ included a UL
+discovered prior to its sampling and a value of 0 otherwise.\\
 
-We defined the following model to describe the probability of presence
-$\pi_q$ of an unknown lek in a grid cell $q$:
+We defined the following model to describe the probability
+$\pi_q$ of UL presence in a grid cell $q$:
 
 \begin{eqnarray*}
   z_q & \sim & \mathcal{B}(b_q \times (1-s_q)\times \beta)\\
@@ -884,14 +881,13 @@ $\pi_q$ of an unknown lek in a grid cell $q$:
   b_q & \sim & \mathcal{B}(\pi_q)\\
 \end{eqnarray*}
 
-where $\beta$ is the probability of detection of an unknown lek during
-the search of a grid cell, and $\alpha$ is the probability that an
-unknown lek present in the cell was discovered prior to its
-sampling. The parameters $\alpha,\beta,\pi_q$ are unknown and must be
-estimated.\\
+where $\beta$ is the detection probability during a grid cell search,
+and $\alpha$ is the probability that a UL present in the cell was
+discovered prior to its sampling. The parameters $\alpha,\beta,\pi_q$
+are unknown and must be estimated.\\
 
-We modelled the probability of presence of an unknown lek in a grid
-cell with the following model:
+We modeled the probability of presence of a UL in a grid
+cell with:
 
 \begin{equation}
   \label{eq:eqp}
@@ -899,34 +895,33 @@ cell with the following model:
 \end{equation}
 
 where $r_q$ measures the proportion of the grid cell $q$ covered by
-area of potential presence of the species (defined by experts in 2009,
+area of potential capercaillie presence (defined by experts in 2009,
 before the onset of the program), and $h_q$ is a binary variable
-taking the value 1 if the grid cell $q$ contains a known lek and 0
-otherwise. The intercept $a_{g(q)}$ and slope of the area of potential
-presence $b_{g(q)}$ is
+taking a value of 1 if the grid cell $q$ contains a known lek and a
+value of 0 otherwise. The intercept $a_{g(q)}$ and slope of the area
+of potential presence $b_{g(q)}$ is
 supposed to vary between geographical regions.\\
 
-We estimate the parameter $\beta$ with the data collected during the
-experiment carried out to estimate the probability to detect a lek
-unknown to the observer in a grid. A sample of grid cells containing a
-known number of known leks (but unknown to the observers) was drawn
-and each cell was assigned to one observer. Two observers participated
-to this experiment: one experienced observer and one inexperienced
-one. Let $N_c$ be the number of known leks included in the grid cell
-$c$. The observer searching this cell defines a search sector. Let
-$S_c$ be the number of these known leks included in the search
-sector. Finally, let $D_c$ be the number of known leks detected by the
-observer in this sector. We define the binary variable $e(c)$ taking
-the value 1 if the observer searching the cell $c$ is experienced and
-0 if the observer is inexperienced. We use the following model:
+We estimated the parameter $\beta$ with the data collected during the
+lek detection experiment. A sample of grid cells containing a known
+number of known leks (but unknown to the observers) was drawn and each
+cell was assigned to one observer. Two observers participated to this
+experiment: one experienced observer and one inexperienced one. Let
+$N_c$ be the number of known leks included in the grid cell $c$. The
+observer searching this cell defines a search sector. Let $S_c$ be the
+number of these known leks included in the search sector. Finally, let
+$D_c$ be the number of known leks detected by the observer in this
+sector. We define the binary variable $e(c)$ taking a value of 1 if
+the observer searching the cell $c$ is experienced and a value of 0 if
+the observer is inexperienced. We used the following model:
 \begin{eqnarray*}
   D_c & \sim & \mathcal{B}(S_c, \delta)\\
   S_c & \sim & \mathcal{B}(N_c, \zeta_{e(c)})
 \end{eqnarray*}
-where $\delta$ is the probability to detect a lek during the search,
-given that the lek is present in the search sector, and $\zeta_{e(c)}$
+where $\delta$ is the probability to detec a lek during the search,
+given that a lek is present in the search sector, and $\zeta_{e(c)}$
 is the probability that the search sector defined by the observer
-includes the lek. Note that this latter probability depends on the
+includes a lek. Note that this latter probability depends on the
 experience of the observer. We supposed that the detection probability
 $\beta$ was uniformly distributed between the minimum detection probability
 $\delta\times\zeta_0$ (characterizing inexperienced observers) and
@@ -953,14 +948,14 @@ For each grid cell search, this data.frame contains:\\
 
 \begin{itemize}
 \item The proportion of the grid cell covered by the area of potential
-  presence of the capercaillie (as defined by a group of experts in
+  capercaillie presence (as defined by a group of experts in
   2009, before the onset of the program).
-\item Whether (1) or not (0) a new, unknown lek was discovered during
-  the cell search.
+\item Whether (1) or not (0) a UL was discovered during the cell
+  search.
 \item Whether (1) or not (0) the cell was sampled in 2018-2019
-  (i.e. could possibly contain an unknown lek discovered outside the
+  (i.e. could possibly contain a UL discovered outside the
   framework of our program, prior to its sampling)
-\item Whether (1) or not (0) the cell contained an unknown lek
+\item Whether (1) or not (0) the cell contained a UL
   discovered prior to its sampling.
 \item The label of the geographic region containing the grid cell (1=
   Piemont, 2=High area, 3 = Pyrenees national parc).
@@ -1003,7 +998,7 @@ We can now use the function \texttt{fitModelGrid} to fit this
 model. WARNING: THIS CALCULATION TAKES A VERY LONG TIME (several hours)
 !!!! Note that we have included the results of this calculation as a
 dataset of the package, so that the reader does not need to launch
-this function to reproduce the other calculations:
+this function to reproduce further calculations:
 
 <<fit-model-grid, eval=FALSE>>=
 coefModelULPresence <- fitModelGrid(dataListQ, "modelULPresence")
@@ -1012,14 +1007,14 @@ coefModelULPresence <- fitModelGrid(dataListQ, "modelULPresence")
 \subsubsection{MCMC chains mixing}
 \label{sec:conv-model-fit-grid}
 
-Once the MCMC samples have been obtained, we can plot the chain for a
-visual examination of the mixing:
+Once the MCMC samples have been obtained, we can plot the chains for a
+visual examination of the chain mixing:
 
 <<traceplot-gcs>>=
 mcmc_trace(coefModelULPresence)
 @ 
 
-We also calculate the Gelman diagnostic for the parameters:
+We also calculate the diagnostic of Gelman and Rubin (1992) for the parameters:
 
 <<gelman-diagnostic-gcs, eval=FALSE>>=
 gelman.diag(coefModelULPresence)
@@ -1037,8 +1032,8 @@ We then check the goodness of fit of the model. As for the count
 model, we simulate $M$ virtual datasets (one per MCMC sample) and
 consider several summary statistics (see below). For each one, we
 compare the observed statistics (calculated on the actual dataset)
-with the distribution calculated on the simulated datasets. We first
-use the function \texttt{simulateModelGrid} to simulate the
+with the statistical distribution of simulated values. We first use
+the function \texttt{simulateModelGrid} to simulate the
 datasets. Fortunately, this function is faster than the one used for
 the count model, so that it can readily be executed by the user:
 
@@ -1046,8 +1041,8 @@ the count model, so that it can readily be executed by the user:
 sg <- simulateModelGrid(coefModelULPresence, dataListQ)
 @ 
 
-We can then calculate the proportion of the simulated values lower
-than the observed value of the total number of unknown leks discovered
+We can then calculate the proportion of simulated values lower
+than the observed value of the total number of ULs discovered
 in our study:
 
 <<crit-tot>>=
@@ -1056,7 +1051,7 @@ sim <- colSums(sg$sim)
 mean(sim<obs)
 @
 
-The observed value is in the middle of the distribution expected under
+The observed value is at the center of the distribution expected under
 our model. We can calculate the same proportion for each geographical
 region (piemont or high mountains):
 
@@ -1072,14 +1067,14 @@ mean(sim[2,]<obs[2])
 
 @ 
 
-The simulated values are well within the distribution.
+The observed values are located within the distribution of simulated values.
 
 \subsubsection{Identifiability of the parameters}
 \label{sec:ident-param}
 
 We also assessed the identifiability of the parameters of interest in
-this model, using the parameter $\tau$ of \cite{Garrett2000} (see
-section \ref{sec:identifiability}):
+this model, using the parameter $\tau$ described by \cite{Garrett2000}
+(see section \ref{sec:identifiability}):
 
 <<>>=
 rs <- do.call(rbind, coefModelULPresence)
@@ -1118,7 +1113,7 @@ The parameters of this model were not as precisely identified as for
 the model of counts. The probability $\alpha$ is the less precisely
 identified parameter; however this parameter is not a parameter of
 interest: we included this parameter in our model to account for the
-fact that we should not model the detection process during prospection
+fact that we should not model the detection process during search
 when it was known that a lek was present in a grid cell. Thus, the
 weak identifiability for this parameter is not a problem. Other
 parameters are more precisely identified, though there is still a
@@ -1132,10 +1127,10 @@ accept these estimates.
 \label{sec:estim-numb-males}
 
 
-Let $S_{g\ell}$ be the number of leks of type $\ell$ in the region
-$g$. Note that this number needs to be estimated for unknown leks
-(i.e. for $\ell = 3$. The grid cell search model can be used to
-estimate $S_{g3}$. We estimate this number:
+Let $S_{g\ell}$ be the number of leks of type $\ell$ in region
+$g$. Note that this number needs to be estimated for ULs (i.e. for
+$\ell = 3$). The grid cell search model can be used to estimate
+$S_{g3}$. We estimated this number with:
 
 \begin{equation}
   \label{eq:ug}
@@ -1144,10 +1139,9 @@ estimate $S_{g3}$. We estimate this number:
 
 where the probability $\pi_q$ is calculated for each grid cell $q$
 with the equation \ref{eq:eqp}, and the sum is calculated over all the
-grid cells of the frame where the searched cells have been
-sampled. Then, the number of males $n_{g\ell b}$ in the geographic
-region $g$ for the type of lek $\ell$ during the period $b$ can be
-estimated with:
+grid cells of the sampling frame. Then, the number of males
+$n_{g\ell b}$ in geographic region $g$ for lek type $\ell$
+during period $b$ can be estimated with:
 $$
 \widehat{n_{g\ell b}} = \sum_{\ell=1}^3 S_{g\ell} \exp\left\{
   \kappa_{g,\ell,b} + I(\ell=2) \times \sigma^2_\nu/2 +
@@ -1163,8 +1157,8 @@ $$
 \widehat{n_{b}} = \sum_{g=1}^5 \sum_{\ell=1}^2 \widehat{n_{g\ell b}}
 $$
 
-We show how we estimated We store the number of KAL and KIL in each
-one of the five regions:
+We store the number of KAL and KIL in each one of the five regions in
+R vectors:
 
 <<>>=
 NKAL <- c(14L, 64L, 76L, 48L, 46L)
@@ -1174,7 +1168,7 @@ NKIL <- c(6L, 80L, 102L, 32L, 96L)
 We use the function \texttt{estimateNmales} to combine the two models
 and estimate the number of males in the different geographical
 regions. The frame of grid cells as an argument is required for the
-estimation of the number of unknown leks in each region. This frame is
+estimation of the number of ULs in each region. This frame is
 stored in the dataset \texttt{gridFrame}:
 
 <<>>=
@@ -1184,9 +1178,9 @@ head(gridFrame)
 This data.frame contains the following variables for each grid cell:\\
 
 \begin{itemize}
-\item proportion of the cell covered by the potential presence area of the
-  capercaillie
-\item whether the cell contains (1) or not (0) a lek already known
+\item proportion of the cell covered by the potential capercaillie
+  presence area
+\item whether the cell contains (1) or not (0) an already known lek
 \item the geographic region (original partitioning in 5 regions)
 \item the geographic region code used in the grid cell search model (1
   = piemont, 2 = high range)\\
@@ -1197,18 +1191,19 @@ nm <- estimateNmales(coefModelCountDetectBinREY, coefModelULPresence,
                      gridFrame, NKAL, NKIL)
 @ 
 
-The function \texttt{summary} allows to show the estimation of the
-number of males for each one of the five period: 
+The function \texttt{summary} shows the estimated number of males for
+all two-year periods:  
 
 <<>>=
 summary(nm)
 @ 
 
 This function returns the point estimate of the population size each
-period (with a 80\% credible interval), the point estimate of the rate
-of change of this size between the first and last period, and the
-probability of the three scenarios: increase (actual change rate $>$
-10\%), decrease (actual change rate $<$ -10\%), stability
+two-year period (with a 80\% credible interval), the point estimate of
+the rate of change of this size between the first and last period, and
+the probability of the three scenarios: increasing population (actual
+change rate $>$ 10\%), decreasing population (actual change rate $<$
+-10\%), stability
 (otherwise).\\
 
 The function \texttt{distritime} shows the posterior distribution of
@@ -1219,7 +1214,8 @@ distritime(getTotal(nm))
 @ 
 
 The function \texttt{showChangeRate} can be used to estimate the rate
-of change of the population size between the first and last period:
+of change of the population size between the first and last two-year
+periods:
 
 <<>>=
 showChangeRate(nm)
@@ -1242,48 +1238,49 @@ summary(nm,1)
 \label{sec:list-altern-models}
 
 The population size estimation by a N-mixture model can be very
-sensitive to the misspecification of the detection process \cite{Link2018}. We
-considered several alternative models for this process before choosing
-the approach detailed in our paper. We also tried to check our
-assumption of a constant number of males within the two-year
-periods. We describe these models in this section, and show in the
-next sections how we compared the different models with cross
-validation.\\
+sensitive to the misspecification of the detection process
+\cite{Link2018}. We considered several alternative models for this
+process before choosing the approach detailed in our paper. We also
+tried to check our assumption of a constant number of males within the
+two-year periods. We describe these alternative models in this
+section, and show in the next sections how we compared the different
+models with cross-validation.\\
 
 We recall the detection model used in the paper:
 $$
 \mbox{logit } p_{i,t,k} = \alpha_d + \beta_d \times o_{i,t,k} + e_{g(i),t}
 $$
-where $o_{i,t,k}$ is the number of observers partipating to the k-th
+where $o_{i,t,k}$ is the number of observers partipating to $k$-th
 census on lek $i$ during year $t$, and $e_{g(i),t}$ is a
 Gaussian random effect describing the variation in detectability
 during a given year in a given region. As already described, this
 model is programmed for the JAGS software in the dataset
 \texttt{modelCountDetectBinREY} of the package.\\
 
-We first tested whether the year random effect was required in the
+We first tested whether the year random effects were required in the
 model, by fitting the simpler model:
 $$
 \mbox{logit } p_{i,t,k} = \alpha_d + \beta_d \times o_{i,t,k}
 $$
 i.e., the same model as before, but without the year random
-effect. This model is programmed for the JAGS software in the dataset
+effects. This model is programmed for the JAGS software in the dataset
 \texttt{modelCountDetectBin}.\\
 
 We also tested the model \texttt{modelCountDetectBin} by considering
 one-year periods. Indeed, in our paper, we have supposed that the
-number of males present in a given region did not vary within
-two-years periods. Within a given period, the between year variation
-in the number of detected males was supposed to be caused by between
-year variability in the probability of detection. We therefore tried
-to check this assumption by setting $b(t)=t$ in equations
-\ref{eq:eqy}, \ref{eq:eqN}, and \ref{eq:eqlambda}, and by fitting the
-binomial detection model without year random effects.\\
+number of males present in a given region did not vary within two-year
+periods. Within a given period, the between-year variation in the
+number of detected males was supposed to be caused by between-year
+variability in the detection probability. We therefore tried to check
+this assumption by setting $b(t)=t$ in equations \ref{eq:eqy},
+\ref{eq:eqN}, and \ref{eq:eqlambda}, and by fitting the
+binomial detection model without the random effects of the years.\\
 
-Then, we tested whether an extra-binomial variation was required for
-the detection process by modelling the number of detected animals as a
-beta-binomial distribution (see \cite{Martin2011a}). That is, we
-suppose the following model:
+We also tested whether an extra-binomial variation was required for
+the detection process of our original model (i.e. with two-year
+periods and year random effects), by modeling the number of detected
+animals as a beta-binomial distribution (see \cite{Martin2011a}). That
+is, we considered the following model:
 \begin{eqnarray*}
 \mbox{logit } d_{i,t,k} & = & \alpha_d + \beta_d \times o_{i,t,k} +
 e_{g(i),t}\\
@@ -1294,15 +1291,18 @@ p_{i,t,k} & \sim & \mbox{Beta}\left( d_{i,t,k} \times
 This model is programmed for the JAGS software in the dataset
 \texttt{modelCountDetectBetaBinREY}.\\
 
-Finally, we tested whether the relationship between the probability of
-detection and the number of  observer was linear by including a
+Finally, we tested whether the relationship between the detection
+probability and the number of observers was linear by including a
 quadratic effect of this variable in our model:
 $$
 \mbox{logit } p_{i,t,k} = \alpha_d + \beta_d \times o_{i,t,k} +
 \omega_d \times o_{i,t,k}^2
 $$
 This model is programmed for the JAGS software in the dataset
-\texttt{modelCountDetectBinREYObs2}.
+\texttt{modelCountDetectBinREYObs2}.\\
+
+We compared these models using cross-validation. We describe in the
+next subsections how we carried out this comparison.
 
 
 
@@ -1313,68 +1313,59 @@ This model is programmed for the JAGS software in the dataset
 
 
 We have used the approach described by \cite{Vehtari2017} to compare
-various models for the detection process. This approach relies on
-cross-validation and allows to identify, in a set of alternative
-models, the one that will allow the best prediction of the values of
-the variables of interest. We describe this approach in this section,
-and show how we applied it in our case in the next section.\\
+the different models for the detection process. This approach relies
+on cross-validation and identifies, in a set of alternative models,
+the model that return the best predictions of new data. We describe
+the rationale behind this approach in this
+section, and we show how we used it in the next section.\\
 
-Consider two models $\mathcal{M}_0$ and $\mathcal{M}_1$ fit on the
-same dataset. We can use the \textit{expected log pointwise predictive
-  density for a new dataset}, or \textbf{elpd} as
-a criterion to compare the two models.\\
+Consider two models $\mathcal{M}_0$ and $\mathcal{M}_1$ fitted to the
+same dataset. These two models can be compared with the
+\textit{expected log pointwise predictive density for a new dataset},
+or \textbf{elpd}. First consider a simple observed dataset with $n$
+statistical units, where each unit $i$ is characterized by a value of
+a response variable $y_i$. For example, this dataset may contain the
+numbers $y_i$ of detected cocks during each census $i$, among $n$
+censuses carried out on a unique lek. We measure the quality of
+prediction by a model of the data by calculating the elpd of the
+model, i.e. by trying to predict the number of detected males in $n$
+new censuses of the same lek at the same year, in the same
+conditions.\\
 
-We have a dataset with $n$ units, each unit $i$ being characterized by
-the measure of a response variable $y_i$. The elpd, calculated on the
-dataset for a given model measures the ability of the model to predict
-the same variable $y$ on a new independent dataset of the same size
-(i.e. with $n$ units).\\
-
-Consider a virtual example (we will consider our study in the next
-section). Imagine that we are studying a unique lek, and that we carry
-out $n$ censuses of the male capercaillie on this lek. We suppose, in
-our example, that the number of detected males $y_i$ during census $i$
-is drawn from a binomial distribution with parameters $N$ (the actual
-number of males) and $d$ (the detection probability). We measure the
-quality of our prediction by our model by calculating the elpd on four
-model, i.e. by trying to predict the number of detected
-males in $n$ new censuses in the same conditions.\\
-
-\textbf{In theory}, for a given model $\mathcal{M}_0$, this criterion
-should be calculated by:
+\textbf{In theory}, for a given model -- say $\mathcal{M}_0$ -- this
+criterion should be calculated by:
 $$
 \mbox{elpd} = \sum_{i=1}^n \int p_t(\tilde y_i) \log p(\tilde y_i|y, \mathcal{M}_0) d\tilde y_i
 $$
-where $\tilde y_i$ is the value of the variable $y$ for the unit $i$
-in the new dataset (in our virtual exemple, the number of detected
-males during the census $i$ on the lek in our new dataset).
-The value of $p_t(\tilde y_i)$ is the \textit{true} probability to
-have $\tilde y_i$ (under the true process), and
+where $\tilde y_i$ is the value of the variable $y$ for unit $i$ in
+the new dataset (in our example, the number of detected males during
+census $i$ on the lek in our new dataset).  The value of
+$p_t(\tilde y_i)$ is the \textit{true} probability to obtain
+$\tilde y_i$ (under the true process), and
 $p(\tilde y_i|y, \mathcal{M}_0)$ the probability to obtain
-$\tilde y_i$ under the model $\mathcal{M}_0$ fit on the observed
-dataset $y$. When this criterion is high, the model is similar to the
-reality (as $p_t(\tilde y_i)$ is
-important when $p(\tilde y_i|y, \mathcal{M}_0)$ is important).\\
+$\tilde y_i$ under the model $\mathcal{M}_0$ fitted to the observed
+dataset $y$. When the elpd criterion is high, the model closely
+describes the reality.\\
 
 \textbf{In practice}, we cannot calculate the value of the elpd since
 we do not know the true model $p_t(\tilde y_i)$. \cite{Vehtari2017}
 propose several approaches relying on cross-validation to estimate the
-elpd with the available dataset. We will not describe all these
-approaches; instead, we describe the \textit{K-fold cross validation}
-approach that we implemented in our study.\\
+elpd with the available dataset; we describe here the \textit{K-fold
+  cross validation} approach that we implemented in our study.\\
 
-We randomly partition the dataset in $K$ subsamples. Then, one
-subsample is retained as validation set and the remaining $K-1$
-subsamples are used as a calibration dataset: the model
-$\mathcal{M}_0$ is fit to this dataset. The fit of the model by MCMC
-allows to obtain $S$ vectors $\theta^{s,k}$ randomly drawn from the
-posterior distribation $p(\theta|y_{-k}, \mathcal{M}_0)$, with
+To implement this approach, we must randomly partition the dataset in
+$K$ subsamples. At each step of the cross-validation process, one
+subsample is retained as a validation set and the remaining $K-1$
+subsamples are pooled together and used as a calibration set. The
+model $\mathcal{M}_0$ is then fitted to the calibration set using
+MCMC, leading to $S$ vectors $\theta^{s,k}$ randomly drawn from the
+posterior distribution $p(\theta|y_{-k}, \mathcal{M}_0)$, with
 $y_{-k}$ the calibration dataset obtained after the removal of the
-subsample $k$. More simply, $\theta^{s,k}$ is the  $\theta$ simulated
-at the iteration $s$ of the MCMC used to fit the model after removal
-of the subsample $k$. Then, for each observation $i$ belonging to the
-tests set $k$,  we calculate the contribution of the observation $i$
-to the estimated elpd by:
+subsample $k$. In other words, $\theta^{s,k}$ is the $\theta$
+simulated at the iteration $s$ of the MCMC used to fit the model after
+removal of the subsample $k$. Then, for each observation $i$ belonging
+to the validation set $k$, we calculate the contribution of the
+observation $i$ to the estimated elpd by:
 $$
 \widehat{\mbox{elpd}}_i(\mathcal{M}_0) = \log \left ( \frac{1}{S} \sum_{s=1}^S
   p(y_i|\theta^{k,s}, \mathcal{M}_0) \right )
@@ -1382,51 +1373,53 @@ $$
 with $p(y_i|\theta^{k,s}, \mathcal{M}_0)$ the probability to obtain
 the observed value $y_i$, for the parameter vector
 $\theta^{s,k}$ generated by the $s$-th MCMC iteration. This
-probability can be calculated thanks to the model $\mathcal{M}_0$.\\ 
+probability can be calculated using the model $\mathcal{M}_0$.\\ 
 
 This operation is repeated on all subsamples $k$, which allows to
-obtain an estimate of the contribution
-$\widehat{\mbox{elpd}}_i$ to the elpd for all observations $i$ of the
-dataset. We can estimate the total elpd by:
+estimate the contribution $\widehat{\mbox{elpd}}_i$ to the elpd for
+all observations $i$ of the dataset. We can estimate the total elpd
+by:
 $$
 \widehat{\mbox{elpd}}_{\mbox{xval}}(\mathcal{M}_0) = \sum_i
 \widehat{\mbox{elpd}}_i(\mathcal{M}_0)
 $$
-More simply, this estimate of the elpd is obtained by summing on all
-statistical units the mean log posterior probability to obtain the
-response variable for this unit thanks to the model that would have
-been fit without this unit. We predict the data thanks to a model fit
-without these data.
+The same operation can be repeated for model $\mathcal{M}_1$, and the
+model with the largest value of $widehat{\mbox{elpd}}_{\mbox{xval}}$
+is the model with the best predictive efficiency.
 
 
 \subsection{K-fold cross-validation in our study}
 \label{sec:k-fold-cv-study}
 
-Now consider our study, and in particular the N-mixture model used to
-predict the mean number of males on leks. This is a hierarchical
-model, which raises the question of the level at which we wish to
-assess the predictive ability of our model. Considering the aim of the
-model is essential to choose this level \cite{Merkle2019}. Actually,
-our aim is to be able to predict the time changes of the actual number
-of males on leks not included in the sample.\\
+Now consider the N-mixture model used to predict the mean number of
+capercaillie cocks on leks in our study. This is a hierarchical model,
+which raises the question of the ``level'' at which the statistical
+unit should be defined to assess the predictive ability of our model
+(the census? the set of censuses on a lek during a given year? the
+whole set of censuses carried out during all years of the study period
+on a given lek? etc.). We must consider the aim of the model to choose
+this level appropriately \cite{Merkle2019}.\\
 
-We partition our dataset in $K=10$ subsamples (\cite{Vehtari2017}
-indeed recommend to define at least 10 subsamples in \textit{K-fold
-  cross validation} approaches). As our aim is to predict the number
-of males that would have been detected on leks not included in the
-sample, we include \textit{all} the censuses carried out on a leks (all
-censuses and all years) to the same subsample. This approach is
-the \textit{grouped K-fold for leave-one-group out} defined in
+Actually, the estimation of the capercaillie population sizes and
+trends strongly relies on our ability to predict the time series of
+the number of males on leks not included in the sample. Thus, we must
+include \textit{all} censuses carried out on a lek (all censuses and
+all years) to the same subsample, and assess the predictive efficiency
+at the level of the lek. This approach is the \textit{grouped K-fold
+  for leave-one-group out} defined in
 \url{https://avehtari.github.io/modelselection/rats_kcv.html}. In
 other words, we have $N$ leks (each one being censused one or several
-years, with one or several censuses every year), and these $N$
-leks are partitionned in $K$ subsamples of $N/k$ leks.\\
+years, with one or several censuses every year), and these $N$ leks
+are partitionned in $K$ subsamples of $N/k$ leks.  We partitionned our
+dataset in $K=10$ subsamples (\cite{Vehtari2017} indeed recommend to
+define at least 10 subsamples in \textit{K-fold
+  cross validation} approaches).\\
 
-As described in the previous section, we fit a model on a calibration
-dataset excluding a subsample for each subsample $k$ in turn. For each
-calibration dataset excluding a subsample $k$, we then have a sample
-of $S$ MCMC generated vectors of parameters $\theta^{k,s}$ containing
-the parameters at the top of the model ($\kappa_{g(i),\ell(i),b(t)}$,
+As described in the previous section, we fitted a model on a
+calibration dataset excluding each subsample $k$ in turn. For each
+calibration dataset excluding a subsample $k$, we then drew a MCMC
+sample of $S$ vectors of parameters $\theta^{k,s}$ containing the top
+parameters of the model ($\kappa_{g(i),\ell(i),b(t)}$,
 $\sigma_\kappa, \sigma_\epsilon, \sigma_\eta, \sigma_\nu, \alpha_d ,
 \beta_d, \sigma_e$).\\
 
@@ -1453,18 +1446,18 @@ p(\mathbf{y}_i|\theta^{k,s}, \mathcal{M}_0) = \int p(\mathbf{r}_i|
 \mathbf{N}_i) \times p(\mathbf{N}_i|\theta^{k,s},
 \mathcal{M}_0)d\mathbf{N}_i
 $$
-with $\mathbf{N}_i$ the vector containing the numbers of detected
-males for each two-years periods. We approximate this integral by a
-Montecarlo approach \cite{Robert2010a}. For each vector $\theta^{k,s}$
-generated by MCMC, we simulated $R = 1000$ vectors
+with $\mathbf{N}_i$ the vector containing the actual numbers of males
+on the lek $i$ for each two-year period. We approximate this integral
+by a Monte Carlo approach \cite{Robert2010a}. For each vector
+$\theta^{k,s}$ generated by MCMC, we simulated $R = 1000$ vectors
 $\mathbf{N}_i^{(r)}$ using our model. For each simulated vector: (i)
 we simulated for each a lek effect $\eta_i$, an overdispersion
 residual $\epsilon_{ij}$, and possibly a natural unit effect
 $\nu_{u(i)}$; (ii) we summed these effects and added the simulated
 value of $\kappa_{g(i),\ell(i),b}$ to calculate the value of
-$\log \lambda_{it}^{(r)}$; (iii) we randomly sampled $R$ actual number
-of males $N_{it}^{(r)}$ in a Poisson distribution with parameter
-$\lambda_{it}^{(r)}$), and we derived from each vector
+$\log \lambda_{it}^{(r)}$; (iii) we randomly sampled $R$ actual
+numbers of males $N_{it}^{(r)}$ in a Poisson distribution with
+parameter $\lambda_{it}^{(r)}$), and we derived from each vector
 $\mathbf{N}_i^{(r)} = \{N_{it}^{(r)}\}_{p=1}^5$ the probability
 $p(\mathbf{y}_i| \mathbf{N}_i^{(r)}, \theta^{k,s})$ under our
 detection model. The probability
@@ -1472,7 +1465,8 @@ $p(\mathbf{y}_i|\theta^{k,s}, \mathcal{M}_0)$ is then equal to the
 mean over all $R$ simulations of these probabilities
 $p(\mathbf{y}_i| \mathbf{N}_i^{(r)}, \theta^{k,s})$:
 $$
-\hat p(\mathbf{y}_i|\theta^{k,s}, \mathcal{M}_0) = \frac{1}{R} p(\mathbf{y}_i| \mathbf{N}_i^{(r)}, \theta^{k,s})
+\hat p(\mathbf{y}_i|\theta^{k,s}, \mathcal{M}_0) = \frac{1}{R}
+\sum_{r=1}^R p(\mathbf{y}_i| \mathbf{N}_i^{(r)}, \theta^{k,s})
 $$
 The probability $p(\mathbf{y}_i| \mathbf{N}_i^{(r)}, \theta^{k,s})$ is
 calculated by the product of the probabilities $p(y_{itk}|N_{it},
@@ -1482,26 +1476,25 @@ period.\\
 To sum up, \textit{in theory}, for a given model $\mathcal{M}_0$, the
 elpd is calculated by summing the individual contributions
 $\widehat{\mbox{elpd}}_i(\mathcal{M}_0) $ over all leks $i$. However,
-the number of censuses differs a lot between leks (between 1 to
-19 censuses in 10 years). But the probability to observe a
-given set of censuses will decrease when the number of censuses
-increase: for example, if $p$ is the probability to detect $n$ males
-during a census, then the probability to detect $n$ males
-during each one of two censuses is $p^2$ if these two censuses
-are independent. In other words, the Therefore, the probability to
-observe a given set of censuses will decrease with the size of the
-set. In other words, the logarithm of the mean of 
+the number of censuses differs a lot between leks (between 1 to 19
+censuses in 10 years). However, the probability to observe a given set
+of censuses decreases when the number of censuses increases: for
+example, if $p$ is the probability to detect $n$ males during a
+census, then the probability to detect $n$ males during each one of
+two censuses is $p^2$ if these two censuses are independent. In other
+words, the logarithm of the mean of
 $p(\mathbf{y}_i|\theta^{k,s}, \mathcal{M}_0)$ over all simulations $s$
-will be much smaller for leks with many censuses: these leks
-will have a much larger weight in the calculation the elpd.\\
+is much smaller for leks with many censuses:
+these leks have a much larger weight in the calculation the elpd.\\
 
 This problem was not considered in \cite{Vehtari2017} (who focus their
-paper on leave-one-out cross-validation, where this difference in
-sample size among units is not considered). We propose to complete
-this analysis with an approach attempting to correct these unequal
-weights. As noted before, the order of magnitude of the probability to
-observe $n$ events will be $p^n$ if the probability to observe one
-event is $p$ and if these events are independent. Therefore, the
+paper on leave-one-out cross-validation, so that there is no
+difference in sample size among statistical units in their study). We
+propose to complete this first calculation of the elpd with another
+approach attempting to correct these unequal weights. As noted before,
+the order of magnitude of the probability to observe $n$ events is
+$p^n$ if the probability to observe one event is $p$ and if these
+events are independent. Therefore, the
 log-probability will be equal to $n\log p$.\\
 
 Therefore, \textit{if the $c_i$ censuses carried out on a given lek
@@ -1513,22 +1506,22 @@ elpd with $\widehat{\mbox{elpd}}_i(\mathcal{M}_0)/c_i$ would allow to
 give the same weight to all leks in the calculation of the elpd. Let
 eldp$^c$ be the elpd ``corrected'' by this approach.\\
 
-However, note that in our study, the $c_i$ censuses carried out on a
-given lek \textit{are not} independent: some censuses are carried out
-during the same year and some during different years; some are carried
-out during the same period and some during different periods,
-etc. Therefore, $c_i$ is an overestimation of the ``effective'' sample
-size for lek $i$, and dividing the
-$\widehat{\mbox{elpd}}_i(\mathcal{M}_0)$ by $c_i$ will
+However, in our study, the $c_i$ censuses carried out on a given lek
+\textit{are not} independent: some censuses are carried out during the
+same year and some during different years; some are carried out during
+the same period and some during different periods, etc. Therefore,
+$c_i$ is an overestimation of the ``effective'' sample size for lek
+$i$, and dividing the $\widehat{\mbox{elpd}}_i(\mathcal{M}_0)$ by
+$c_i$ will
 ``over-correct'' the places with the largest number of censuses.\\
 
 Thus, elpd gives too much weight to the big leks in the model
 comparison, and elpd$^c$ does not give enough weight to these leks.
-However, if these two criteria return the same conclusions, we will be
-confident that the selected model is the best one in the set of
+However, when these two criteria return the same conclusions, we can
+be confident that the selected model is the best one in the set of
 compared models.\\
 
-We calculated the contributions to elpd and elpdc for each model. We
+We calculated the contributions to elpd and elpd$^c$ for each model. We
 also calculated the standard deviation of the difference between the
 elpd/elpd$^c$ of a model $\mathcal{M}_r$ and the elpd/elpd$^c$ of the
 best model $\mathcal{M}_b$ in the set. This standard deviation is
@@ -1536,7 +1529,7 @@ calculated by:
 $$
 \sqrt{\frac{n}{n-1} \sum_{i=1}^n (\Delta_i- \bar{\Delta}_i)^2 }
 $$
-Where $\Delta_i = \widehat{\mbox{elpd}}_i(\mathcal{M}_s) -
+Where $\Delta_i = \widehat{\mbox{elpd}}_i(\mathcal{M}_r) -
 \widehat{\mbox{elpd}}_i(\mathcal{M}_b)$, and $\bar{\Delta}$ is the
 mean of the $\Delta_i$. The standard deviation for the elpd$^c$ is
 obtained similarly by replacing elpd by elpd$^c$ in the above
@@ -1583,16 +1576,16 @@ listCoefsCVBinREY <- kfoldCVModelCount(ooo, dataList, "modelCountDetectBinREY")
 @ 
 
 The resulting object \texttt{listCoefsCVBinREY} is a list containing
-the value of the coefficients sampled by MCMC by excluding each group
-of leks in turn (the first element of the list contains the
+the values of the coefficients sampled by MCMC by excluding each
+subsample of leks in turn (the first element of the list contains the
 coefficients sampled by MCMC when fitting the model on a dataset
 excluding the group 1 of lek, etc.). We can then use the function
 \texttt{LLCount} to calculate the matrix containing the probabilities
-$p(\mathbf{y}_i| \mathbf{N}_i^{(r)}, \theta^{k,s})$
-to observe the set of detected males during all censuses for a
-given lek (rows) under the model with a given sampled vector of
-parameters (columns). WARNING, this calculation can also be very long. The result of
-this calculation is also available as a dataset in the package:
+$p(\mathbf{y}_i| \mathbf{N}_i^{(r)}, \theta^{k,s})$ to observe the set
+of detected males during all censuses for a given lek (rows) under the
+model with a given sampled vector of parameters (columns). WARNING,
+this calculation can also be very long. The result of this calculation
+is also available as a dataset in the package:
 
 <<eval=FALSE>>=
 llcBinREY <- LLCount(dataList, listCoefsCVBinREY, ooo)
@@ -1604,14 +1597,15 @@ Finally, we can calculate the contribution of each lek to the elpd:
 elpdBinREY <- elpdLeks(llcBinREY)
 @
 
-The same approach is used for other models. Note that because the lists of
-coefficients sampled by MCMC returned by the function
+The same approach is used for other models. Note that because the
+lists of coefficients sampled by MCMC returned by the function
 \texttt{kfoldCVModelCount} are very large objects ($>$ 40 MB), we do
-not include such objects for other models. However, the result of the
-function \texttt{LLCount} is presented for all of them. For the
-record, the code used to obtain such object, WHICH TAKES SEVERAL DAYS
-OF COMPUTING, is presented below. The resulting objects (with names
-starting by \texttt{llc}) are stored as datasets of the package:
+not include such objects for other models in our package. However, the
+result of the function \texttt{LLCount} is presented for all of
+them. For the record, the code used to obtain such object, WHICH TAKES
+SEVERAL DAYS OF COMPUTING, is presented below. The resulting objects
+(with names starting by \texttt{llc}) are stored as datasets of the
+package:
 
 <<eval=FALSE>>=
 ## K-fold CV for different models
@@ -1766,15 +1760,15 @@ than or equal to the observed difference between the elpd of a model
 and the elpd of the best model.\\
 
 The model used in the paper (binomial distribution with the logit of
-the detection probability modelled as a linear effect of the number of
+the detection probability modeled as a linear effect of the number of
 observers + a year random effect) is the best model in the set
 according to the elpd. Note that adding a quadratic effect of the
 number of observers or supposing an extra-binomial variation in the
 detection probability did not lead to a significant improvement of the
-prediction. However, removing the year random effect from the
+prediction. However, removing the random effects of the years from the
 detection model led to a decrease of the elpd. Moreover, estimating
-one number of males in each region using one year-period led to a
-strong decrease of the elpd. Clearly, our choice to consider two year
+one number of males in each region using one year-periods led to a
+strong decrease of the elpd. Clearly, our choice to consider two-year
 periods is a better one.\\
 
 The same conclusions are reached when working on the ``corrected''
@@ -1792,10 +1786,10 @@ dfelpdc
 \label{sec:lek--281}
 
 We have seen in the section \ref{sec:goodness-fit} that the lek \# 281
-was characterized by a very large residual in our model. This lek is
-an unknown lek discovered by the grid cell searches carried out in
-2013, which is characterized by a very large number of detected
-animals (the two censuses carried out on this lek resulted in 18 and 17
+was characterized by a very large residual in our model. This lek is a
+UL discovered by the grid cell searches carried out in 2013, and it is
+characterized by a very large number of detected animals (the two
+censuses carried out on this lek resulted in 18 and 17
 males respectively).\\
 
 The examination of the quantile plot of the contributions of each lek
@@ -1812,7 +1806,7 @@ text(0.05, -8.71, "Lek 281")
 Other state models that we have tried during previous years on this
 dataset identify the same problem: this lek is an outlier
 characterized by a much larger number of detected males than other
-unknown leks. Since the number of detected unknown leks is low (32
+ULs. Since the number of detected ULs is low (32
 leks), any outlier will have a strong effect on the inference.\\
 
 We wanted to assess more precisely the effect of this lek on our
@@ -1916,25 +1910,24 @@ setg <- cbind(setb,set)[,c(1,4,2,5,3,6)]
 boxplot(setg, cex.axis=0.9, ylab="Posterior distr. on variance of the lek random effects")
 @ 
 
-The estimated variance for unknown leks is much smaller when the lek
+The estimated variance for ULs is much smaller when the lek
 281 is removed. Examination of other parameters show that
 adding/removing census data of the lek \# 281 does not change the
 posterior distribution. \\
 
 Removing this lek from our dataset would lead to a decrease of about
-5\% of our population size estimate, which is probably an
-underestimation: we have no reason to exclude this lek, as it has been
-discovered by our protocol, and actually ``represents'' other unknown
-leks of similar size, which -- although they are probably not very
-frequent in the mountain range -- do exist but are not yet
-discovered. Today, as the number of unknown leks detected during grid
+5\% of our population size estimate. We have no reason to exclude this
+lek, as it has been discovered by our protocol, and actually
+``represents'' other ULs of similar size, which -- although they are
+probably not very frequent in the mountain range -- do exist but are
+not yet discovered. Today, as the number of ULs detected during grid
 cells searches is small, any big lek will have a strong effect on the
 inference, which is what we show here. Today, this lek is an outlier,
 and as such, has a significant effect on our inference, though not
-that strong (probably less than 5\%). But as more and more data on
-unknown leks will be collected in the future, the weight of this lek
-on our estimate will decrease and we will have a finer understanding
-of the distribution of the number of males on unknown leks.
+that strong (probably less than 5\%). But as more and more data on ULs
+will be collected in the future, the weight of this lek on our
+estimate will decrease and we will have a finer understanding of the
+distribution of the number of males on ULs.
 
 
 \section{Sensitivity of our model to the violation of several hypotheses}
@@ -1944,38 +1937,48 @@ of the distribution of the number of males on unknown leks.
 \label{sec:crit-citel-citeb}
 
 Two recent papers by \cite{Link2018} and \cite{Barker2017} identified
-many problems with N-mixture models that can strongly affect estimates
-by these models. In this section, we review the criticisms by these
-authors about N-mixture models to consider whether they apply to our
-model. These authors consider the inference of abundance $N$ drawn
-from a Poisson distribution and a binomial detection process
-characterized by a detection probability $p$:\\
+many problems with N-mixture models that can strongly affect the
+population size estimation by these models. In this section, we review
+the criticisms by these authors about N-mixture models to consider
+whether they apply to our model. These authors consider the inference
+of abundance $N$ drawn from a Poisson distribution and a binomial
+detection process
+characterized by a detection probability $p$.\\
 
-\cite{Barker2017} suggests that in some studies, the abundance $N$ may
-not exist as a parameter. We understand that this situation may occur
-in some point count studies, where the definition of a ``site'' may
-not be very clear. An observer count the number of birds of a given species.\\
+First, \cite{Barker2017} suggests that in some studies, the abundance
+$N$ may not exist as a parameter. We understand that this situation
+may occur in some studies, e.g. in some point count studies where the
+area delimited by a ``site'' may not be clearly defined. However, in
+our study, we suppose that each capercaillie cock of the mountain
+range is located on only one lek. Therefore, the set of leks can be
+considered as a contraction of the space used by capercaillie cocks,
+and the abundance
+does exist as a parameter for each lek.\\
 
-When the detection probability $p\rightarrow 0$, the binomial
-distribution describing the detection process converges towards a
-Poisson distribution with parameter $\lambda = Np$. In other words,
-the parameters $N$ and $p$ are not separable when $p$ is
-small. Several simulations illustrate how\\
+Another issue arises when the detection probability $p\rightarrow 0$;
+in this case the binomial distribution describing the detection
+process converges towards a Poisson distribution with parameter
+$\lambda = Np$. In other words, the parameters $N$ and $p$ are not
+separable when $p$ is small, making the inference on $N$ alone
+difficult. However, in our study, the cock detection probability was
+estimated to be of $\approx$ 0.6, so that this issue is not a concern
+in our study.\\
 
-But the most serious criticisms by these authors concern the effect of
-unaccounted variation in detection probability. These two papers show,
-in the case of a state model corresponding to a simple Poisson
-distribution that even a small amount of unaccounted variation can
-lead to a considerable bias in the estimation of $N$. They show the
-same problem with accidental double counting. Thus, \cite{Link2018}
-note: ``\textit{2\% rate of double counts or a standard deviation of
-  2\% in detection rates might seem insubstantial, but each is large
-  enough to produce >20\% bias in estimation of mean
-  abundance}''. This is a worrying result, as no model could ascertain
-that the amount of unaccounted variation in the detection process is
-so small. In the next two sections, we carry out some simulations to
-test the effect of unaccounted variation in detection probability and
-accidental double counting on the estimation of the number of males.
+Actually, the most serious criticisms by these authors concern the
+effect of unaccounted variation in detection probability. These
+authors show, in the case of a state model corresponding to a simple
+Poisson distribution that even a small amount of unaccounted variation
+can lead to a considerable bias in the estimation of $N$. They show
+the same problem with accidental double counting. Thus,
+\cite{Link2018} note: ``\textit{2\% rate of double counts or a
+  standard deviation of 2\% in detection rates might seem
+  insubstantial, but each is large enough to produce $>$20\% bias in
+  estimation of mean abundance}''. This is a worrying result, as no
+model could ascertain that the amount of unaccounted variation in the
+detection process is so small. In the next two sections, we carry out
+some simulations to test the effect of unaccounted variation in
+detection probability and accidental double counting on the estimation
+of the number of males.
 
 
 
@@ -2194,11 +2197,11 @@ lines(xv, predict(lm(y~x+I(x^2), data=xy), newdata=data.frame(x=xv)), col="red")
 
 Keeping fixed the actual number of males while varying the unaccounted
 variation in detection probability does not change the results
-obtained in the previous section. Accidental double counting can
-generate a strong bias in the estimated number of males.  is unnoticeable when the
-coefficient of variation of the detection probability is $<$15\%. When
-this coefficient of variation reaches 25\%, this results in a point
-estimate of $\sim$ 2200 males instead of $\sim$ 1900,
+obtained in the previous section. The effect of unaccounted variation
+in detection probability is unnoticeable when the coefficient of
+variation of this probability is $<$15\%. When this coefficient of
+variation reaches 25\%, this results in a point estimate of $\sim$
+2200 males instead of $\sim$ 1900,
 i.e. (2200-1900)/1900 $\approx$ 15\% overestimate.\\
 
 This result is very different from the 20\% bias in estimated number
@@ -2308,8 +2311,8 @@ Accidental double counting has a much stronger effect on the
 estimation than unaccounted variation in detection
 probability. Indeed, even a moderate average proportion of 10\% of
 detected animals counted twice results in an estimate of about 2550
-animals in 2010 (instead of the average 1730 obtained in this set of
-simulations). This corresponds to an overestimation of $\sim$ 50\%. We
+animals (instead of the average 1900 obtained in this set of
+simulations). This corresponds to an overestimation of $\sim$ 34\%. We
 therefore confirm the results of \cite{Link2018} here.
 
 
@@ -2393,9 +2396,9 @@ Keeping fixed the actual number of males while varying the probability
 that a detected male was counted twice does not change the results
 obtained in the previous section. Even a moderate average proportion
 of 10\% of detected animals counted twice results in an estimate of
-about 2750 animals in 2010 (instead of the average 1750 obtained in
-this set of simulations). This corresponds to an overestimation of
-$\sim$ 55\%.\\ 
+about 2750 animals (instead of the average 1900 obtained for a zero
+proportion). This corresponds to an overestimation of
+$\sim$ 45\%.\\
 
 In conclusion, the unaccounted double counting during censuses can
 have a very strong effect on our estimation.
@@ -2405,49 +2408,51 @@ have a very strong effect on our estimation.
 \section{History of the program}
 \label{sec:history-program}
 
-The original sampling design was developed in 2009, and its first use
-during the period 2010--2011. Our aim was to estimate the true number
-of males at different spatial scales over the mountain range, the
-smaller scale being the natural unit. For this reason, we initially
-decided to stratify the sampling of both grid cells for cell searchs
-and known leks for censuses by natural unit. First, a sample of natural
-units was drawn. The sample of KILs/KALs and grid cells were sampled
-in those NUs. The same sample of NUs were monitored for the first
-three periods, so that at the end of the third period, all the grid
-cells of those units had been searched for new ULs. For the fourth
-period, a new sample of natural units (partially matching the
-previously sampled NUs, to allow a longitudinal monitoring
+The original sampling design was developed in 2009, and we first
+applied it during the period 2010--2011. Our initial aim was to
+estimate the true number of males at different spatial scales over the
+mountain range, the smaller scale being the natural unit. For this
+reason, we initially decided to stratify the sampling of both grid
+cells for cell searchs and known leks for censuses by natural
+unit. First, a sample of natural units was drawn. The sample of
+KILs/KALs and grid cells were sampled in those natural units. The same
+sample of natural units were monitored for the first three periods, so
+that at the end of the third period, all the grid cells of those units
+had been searched for new ULs. For the fourth period, a new sample of
+natural units was drawn (partially matching the previously sampled
+NUs, to allow a longitudinal monitoring
 at least for some leks).\\
 
-After the first application in 2010--2011, only 6 new unknown leks
-were discovered following the searches carried out in 77 grid cells
-carried out this year. Thus, despite a substantial field work, the
-number of discovered UL was to small to allow the fit of a statistical
-distribution describing the true number of males present on a lek in
-average in the whole range, let alone for each region. We therefore
+After the first application in 2010--2011, only 6 new ULs were
+discovered following the searches carried out in 77 grid cells carried
+out this year. Thus, despite a substantial field work, the number of
+discovered ULs was to small to allow the fit of a statistical
+distribution of the true number of males present on ULs. We therefore
 made the assumption that the number of males on UL had a statistical
 distribution similar to the number of males on KILs. Indeed:\\
 
 \begin{itemize}
 \item We thought at that time that most large leks on the mountain
   range had already been discovered and were already registered as
-  KALs in our sampling frame. Thus, we expected that unknown leks were
-  ``appearing'' small sized leks, probably characterized by a tendency
-  to increase, just as KILs.\\
+  KALs in our sampling frame. Thus, we expected that discovered ULs
+  were small leks that appeared recently on the mountain range,
+  probably characterized by a tendency to increase. In other words, we
+  expected that ULs had a behavior similar to KILs.\\
 
-\item The discovered leks were indeed characterized by a small number
+\item The discovered ULs were indeed characterized by a small number
   of detected males (four leks with one detected male and one lek with
   three detected males), which seemed to confirm this assumption.\\
 
-\item One of the ``discovered'' lek was actually already known by the
-  observer before the sampling. It was a small lek that was known but
+\item One of the ``discovered'' ULs was actually already known by the
+  observers before the sampling. It was a small lek that was known but
   which had never been censused. However the observer had forgotten to
   report it to the program managers prior to the definition of the
   sampling design in 2009. In other words, this UL shared all
   characteristics of a KIL.\\
 
 \item None of the goodness of fit tests carried out at that time
-  seemed to indicate that we were wrong in making this assumption.\\   
+  seemed to indicate that we were wrong in making the assumption that
+  ULs and KILs were behaving similarly.\\   
 \end{itemize}
 
 However, with time, the number of ULs discovered after grid cell
@@ -2457,53 +2462,50 @@ was much larger on ULs than on KILs. This matched the impression of
 some partners of the program that this number was probably
 underestimated.\\
 
-This had the unfortunate consequence to increase the uncertainty of
-our estimation. Indeed, by essence, this category of lek is not well
-known, and only a small number of them is censused every year (though
-it is increasing). The uncertainty on the estimated number of males on
-all unknown leks results from the fact that we need to estimate both
-the number of ULs and the distribution of the true number of males on
-ULs. As by definition none of these components were known at the onset
-of the program, the total number of males present on ULs is the most
-uncertain quantity in our model. However, when we supposed that the
-number of males on ULs had the same distribution as the number of
-males on KILs, we could benefit from a larger dataset. 
+We therefore decided to fit a separate statistical distribution for
+the number of males on ULs after period 4. This had the unfortunate
+consequence to increase the uncertainty of our estimation. Indeed, by
+essence, the category of ULs is not well known, and only a small
+number of them is censused every year (although this number is
+increasing after each period). The uncertainty on the estimated number
+of males on all ULs results from the fact that we need to estimate
+both the number of ULs and the distribution of the true number of
+males on ULs. Since, by definition, none of these components were
+known at the onset of the program, the total number of males present
+on ULs is the most uncertain quantity in our model. Separating the ULs
+and KILs led to a much higher imprecision of the estimates of the
+total number of males, since it implied that the proportion of the
+population present in a badly known compartment of
+the population was larger than previously imagined.\\
 
-The discovery that the number of males on ULs was higher than
-previously thought led to a much higher imprecision of the estimates
-of the total number of males. Indeed, it implied that the proportion
-of the population present in a badly known compartment of the
-population is larger than previously imagined, resulting in more
-uncertain estimates.\\
+As a result, we changed our sampling approach of grid cells. The only
+way to decrease uncertainty was to put a maximum effort in the
+discovery of new ULs. We then increased the effort put in grid cell
+searches for the period 2018--2019. Moreover, we modified the sampling
+design to increase the probability that a grid cell search result into
+the discovery of new ULs. We stopped to restrain our sampling to a
+small set of natural units, and sampled grid cells among all grid
+cells of a geographic region instead.\\
 
-As a result, we changed our sampling approach for the selection of
-grid cells to be searched. The only way to decrease uncertainty was to
-put a maximum effort in the discovery of new ULs. We then increased
-the effort put in grid cell searches for the period
-2018--2019. Moreover, we modified the sampling design to increase the
-probability that a grid cell search result into the discovery of new
-ULs. We  did not restrain our sampling to a set of sampled natural
-units.\\
-
-We used a map of the area of potential presence of the species defined
+We used a map of the area of potential capercaillie presence defined
 by a group of experts in 2009, before the onset of the program as a
 guide to select grid cells. We sampled the grid cells to be searched
 with a probability proportional to the proportion of the cells covered
-by the area of potential presence. Moreover, we decided to no longer
-stratify the grid cells by natural units: it appeared that there were
-no clear differences of the probability of presence of UL between the
-natural units. To suppress this stratification allowed to sample grid
-cells over the whole range and thereby maximize the probability to
-find new ULs in sampled grid cells.\\
+by the area of capercaillie potential presence. Moreover, we decided
+to no longer stratify the grid cells by natural units: it appeared
+that there were no clear differences of the probability of presence of
+UL between the natural units. Avoiding this stratification allowed to
+sample grid cells over the whole mountain range and thereby maximize
+the probability to find new ULs in sampled grid cells.\\
 
 However, between 2010 and 2017, many ULs discovered by the network of
-observers outside the framework of our monitoring (e.g. resulting
-either from accidental discovery, from compilation of local knowledge,
-or from local initiatives leading to the search for new leks) were
-reported to the program managers. When a sampled grid cell contained
-such an UL, no search was organised for this cell, and the presence of
-an UL was reported. Ou model differenciate these ULs from the ULs
-discovered following grid cells.
+observers outside the monitoring framework (e.g. resulting either from
+accidental discovery, from compilation of local knowledge, or from
+local initiatives leading to the search for new leks) were reported to
+the program managers. When a sampled grid cell contained such an UL,
+no search was organised for this cell, and the presence of an UL was
+reported. Our model differenciates these ULs from the ULs discovered
+following grid cells.
 
 
 
